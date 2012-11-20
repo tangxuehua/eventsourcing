@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<project name="CodeSharp.EventSourcing" default="clean">
+  <!--parameter-->
+  <property name="project.config" value="${args0}" dynamic="true" />
+  <!--path-->
+  <property name="dir" value="."/>
+  <property name="dir.tools" value=".\tools"/>
+  <property name="build.base" value="build/${project.config}"/>
+  <property name="build.absolutepath" value="${path::get-full-path(build.base)}" />
+  <!--nuget-->
+  <property name="nuget" value="${path::get-full-path(dir.tools)}" />
+  <property name="nuget.packages" value="${dir}\packages" />
+  <property name="nuget.cache" value="C:\Users\${environment::get-user-name()}\AppData\Local\NuGet\Cache" />
+  <property name="nuget.install" value="${dir}\nuget.install.bat" />
+  <property name="nuget.params.install" value="${nuget} ${path::get-full-path(nuget.packages)}" />
+  <!--msbuild-->
+  <property name="msbuild" value="C:\WINDOWS\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe" />
+  <property name="msbuild.config" value="Debug" dynamic="true"/>
+  <property name="msbuild.params" value="/t:rebuild /p:Configuration=${msbuild.config}" />
+  <property name="msbuild.params.weboutput" value="/t:_CopyWebApplication /p:WebProjectOutputDir=${build.absolutepath}" />
+  <property name="msbuild.params.mvcoutput" value="/t:_CopyWebApplication /p:mvcbuildviews=true /p:WebProjectOutputDir=${build.absolutepath}" />
+  <property name="msbuild.params.output" value="/p:OutputPath=${build.absolutepath}" />
+  <!--NUnit-->
+  <property name="nunit" value="${path::get-full-path(dir.tools)}/nunit/nunit-console.exe" />
+  
+  <!--clean-->
+  <target name="clean" description="clean build folder">
+    <delete dir="${build.absolutepath}"></delete>
+  </target>
+  <target name="nuget" description="nuget install and update">
+    <delete dir="${nuget.packages}"></delete>
+    <delete dir="${nuget.cache}"></delete>
+    <exec program="${nuget.install}"
+          commandline="${nuget.params.install}"
+          workingdir="${dir}" />
+  </target> 
+</project>

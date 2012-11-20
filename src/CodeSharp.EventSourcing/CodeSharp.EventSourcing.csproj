@@ -1,0 +1,174 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F884F01A-ED67-4F21-8576-FD2588491B24}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CodeSharp.EventSourcing</RootNamespace>
+    <AssemblyName>CodeSharp.EventSourcing</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Context\ChildContext.cs" />
+    <Compile Include="Context\TopContext.cs" />
+    <Compile Include="ConcurrencyException.cs" />
+    <Compile Include="Domain\Attributes\SnapshotAttribute.cs" />
+    <Compile Include="Domain\IAggregateRootTypeProvider.cs" />
+    <Compile Include="Domain\IAggregateEventHandlerProvider.cs" />
+    <Compile Include="Domain\Attributes\NotityEventAttribute.cs" />
+    <Compile Include="Domain\ISourcableEventTypeProvider.cs" />
+    <Compile Include="Domain\IAggregateRootFactory.cs" />
+    <Compile Include="Domain\IEventTypeProvider.cs" />
+    <Compile Include="Domain\IAggregateRootInternalHandlerProvider.cs" />
+    <Compile Include="Domain\Impl\DefaultAggregateEventHandlerProvider.cs" />
+    <Compile Include="Domain\Impl\DefaultEventTypeProvider.cs" />
+    <Compile Include="Domain\Impl\DefaultTypeNameMappingProvider.cs" />
+    <Compile Include="Domain\ITypeNameMappingProvider.cs" />
+    <Compile Include="Domain\ISnapshotTypeProvider.cs" />
+    <Compile Include="EventSubscriber\IEventSubscriberEndpoint.cs" />
+    <Compile Include="EventPublisher\AsyncEventPublisher\IAsyncEventHandlerProvider.cs" />
+    <Compile Include="EventSubscriber\DefaultEventSubscriberEndpoint.cs" />
+    <Compile Include="EventPublisher\DefaultEventPublisher.cs" />
+    <Compile Include="EventPublisher\EventHandlerProvider\AttributeBasedEventHandlerProvider.cs" />
+    <Compile Include="EventPublisher\EventHandlerProvider\InterfaceBasedEventHandlerProvider.cs" />
+    <Compile Include="EventPublisher\EventHandlerMetaData.cs" />
+    <Compile Include="EventPublisher\EventHandlerProvider\IEventHandlerProvider.cs" />
+    <Compile Include="EventPublisher\AsyncEventPublisher\Impl\DefaultAsyncEventHandlerProvider.cs" />
+    <Compile Include="EventPublisher\EventHandlerProvider\CompositeEventHandlerProvider.cs" />
+    <Compile Include="EventPublisher\SyncEventPublisher\ISyncEventHandlerProvider.cs" />
+    <Compile Include="EventPublisher\SyncEventPublisher\DefaultSyncEventHandlerProvider.cs" />
+    <Compile Include="EventPublisher\SyncEventPublisher\SyncEventPublisher.cs" />
+    <Compile Include="EventPublisher\IEventPublisher.cs" />
+    <Compile Include="EventPublisher\CompositeEventPublisher.cs" />
+    <Compile Include="LifetimeManager\DynamicLifetimeManager.cs" />
+    <Compile Include="Storage\EmptySnapshotStore.cs" />
+    <Compile Include="Storage\EmptyEventStore.cs" />
+    <Compile Include="Utils\SourcableEventAggregateHandlerCaller.cs" />
+    <Compile Include="Utils\AggregateRootLocator.cs" />
+    <Compile Include="Domain\Impl\DefaultAggregateRootTypeProvider.cs" />
+    <Compile Include="Domain\Attributes\AggregateEventHandlerAttribute.cs" />
+    <Compile Include="Domain\Attributes\SourcableEventAttribute.cs" />
+    <Compile Include="Context\ContextLifetimeManager\CallContextContextLifetimeManager.cs" />
+    <Compile Include="Context\DefaultContextManager.cs" />
+    <Compile Include="Context\ContextLifetimeManager\HttpContextContextLifetimeManager.cs" />
+    <Compile Include="Context\IContextManager.cs" />
+    <Compile Include="Context\IContextLifetimeManager.cs" />
+    <Compile Include="Context\ContextBase.cs" />
+    <Compile Include="Context\IContext.cs" />
+    <Compile Include="Json\JsonNetSerializer.cs" />
+    <Compile Include="Logger\Log4NetLogger.cs" />
+    <Compile Include="Logger\Log4NetLoggerFactory.cs" />
+    <Compile Include="EventPublisher\AsyncEventPublisher\AsyncEventHandlerAttribute.cs" />
+    <Compile Include="EventPublisher\AsyncEventPublisher\Impl\AsyncEventPublisher.cs" />
+    <Compile Include="EventPublisher\AsyncEventPublisher\Address.cs" />
+    <Compile Include="EventPublisher\AsyncEventPublisher\Impl\BinaryMessageSerializer.cs" />
+    <Compile Include="EventPublisher\AsyncEventPublisher\Impl\JsonMessageSerializer.cs" />
+    <Compile Include="EventPublisher\AsyncEventPublisher\Message.cs" />
+    <Compile Include="EventSourcingException.cs" />
+    <Compile Include="EventPublisher\AsyncEventPublisher\Impl\InMemorySubscriptionStorage.cs" />
+    <Compile Include="EventPublisher\AsyncEventPublisher\Impl\MsmqMessageTransport.cs" />
+    <Compile Include="EventPublisher\AsyncEventPublisher\MsmqUtilities.cs" />
+    <Compile Include="EventPublisher\AsyncEventPublisher\Headers.cs" />
+    <Compile Include="EventPublisher\AsyncEventPublisher\IMessageSerializer.cs" />
+    <Compile Include="EventPublisher\AsyncEventPublisher\WorkerThread.cs" />
+    <Compile Include="EventPublisher\AsyncEventPublisher\IMessageTransport.cs" />
+    <Compile Include="EventPublisher\SyncEventPublisher\SyncEventHandlerAttribute.cs" />
+    <Compile Include="Domain\ValueObject.cs" />
+    <Compile Include="EventPublisher\AsyncEventPublisher\ISubscriptionStorage.cs" />
+    <Compile Include="LifetimeManager\AbstractDictStackLifetimeManager.cs" />
+    <Compile Include="LifetimeManager\AbstractLifetimeManager.cs" />
+    <Compile Include="LifetimeManager\CallContextLifetimeManager.cs" />
+    <Compile Include="LifetimeManager\ILifetimeManager.cs" />
+    <Compile Include="LifetimeManager\ILifetimeObject.cs" />
+    <Compile Include="LifetimeManager\HttpContextLifetimeManager.cs" />
+    <Compile Include="Context\ContextLifetimeManager\DynamicContextLifetimeManager.cs" />
+    <Compile Include="Domain\Impl\DefaultSourcableEventTypeProvider.cs" />
+    <Compile Include="ObjectContainer\ComponentAttribute.cs" />
+    <Compile Include="Configuration.cs" />
+    <Compile Include="Domain\AggregateRoot.cs" />
+    <Compile Include="Domain\SourcableEvent.cs" />
+    <Compile Include="Json\IJsonSerializer.cs" />
+    <Compile Include="Domain\Impl\DefaultSnapshotTypeProvider.cs" />
+    <Compile Include="Utils\MethodInvoker.cs" />
+    <Compile Include="Utils\UniqueIdGenerator.cs" />
+    <Compile Include="Utils\TypeUtils.cs" />
+    <Compile Include="Logger\ILogger.cs" />
+    <Compile Include="Logger\ILoggerFactory.cs" />
+    <Compile Include="Utils\Utils.cs" />
+    <Compile Include="ObjectContainer\ObjectContainer.cs" />
+    <Compile Include="ObjectContainer\IObjectContainer.cs" />
+    <Compile Include="Domain\Impl\DefaultAggregateRootInternalHandlerProvider.cs" />
+    <Compile Include="Domain\Impl\DefaultAggregateRootFactory.cs" />
+    <Compile Include="Utils\ConcurrencyUtils.cs" />
+    <Compile Include="Utils\TimeRecorderManager.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Snapshot\ISnapshotable.cs" />
+    <Compile Include="Snapshot\Snapshot.cs" />
+    <Compile Include="Snapshot\ISnapshotPolicy.cs" />
+    <Compile Include="Snapshot\Impl\NoSnapshotPolicy.cs" />
+    <Compile Include="Snapshot\Impl\DefaultSnapshotter.cs" />
+    <Compile Include="Snapshot\ISnapshotter.cs" />
+    <Compile Include="Storage\IEventStore.cs" />
+    <Compile Include="Storage\ISnapshotStore.cs" />
+    <Compile Include="Utils\LockUtility.cs" />
+    <Compile Include="IConfigurationInitializer.cs" />
+    <Compile Include="DefaultConfigurationInitializer.cs" />
+    <Compile Include="ConfigurationSectionHandler.cs" />
+    <Compile Include="Utils\Extensions.cs" />
+    <Compile Include="Utils\ObjectHelper.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="log4net">
+      <HintPath>..\..\packages\log4net.1.2.10\lib\2.0\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Newtonsoft.Json.4.5.10\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Messaging" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
