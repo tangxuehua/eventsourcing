@@ -66,6 +66,9 @@
     <Compile Include="EventPublisher\IEventPublisher.cs" />
     <Compile Include="EventPublisher\CompositeEventPublisher.cs" />
     <Compile Include="LifetimeManager\DynamicLifetimeManager.cs" />
+    <Compile Include="ObjectContainer\ComponentAttribute.cs" />
+    <Compile Include="ObjectContainer\IObjectContainer.cs" />
+    <Compile Include="ObjectContainer\ObjectContainer.cs" />
     <Compile Include="Storage\EmptySnapshotStore.cs" />
     <Compile Include="Storage\EmptyEventStore.cs" />
     <Compile Include="Utils\SourcableEventAggregateHandlerCaller.cs" />
@@ -108,7 +111,6 @@
     <Compile Include="LifetimeManager\HttpContextLifetimeManager.cs" />
     <Compile Include="Context\ContextLifetimeManager\DynamicContextLifetimeManager.cs" />
     <Compile Include="Domain\Impl\DefaultSourcableEventTypeProvider.cs" />
-    <Compile Include="ObjectContainer\ComponentAttribute.cs" />
     <Compile Include="Configuration.cs" />
     <Compile Include="Domain\AggregateRoot.cs" />
     <Compile Include="Domain\SourcableEvent.cs" />
@@ -120,8 +122,6 @@
     <Compile Include="Logger\ILogger.cs" />
     <Compile Include="Logger\ILoggerFactory.cs" />
     <Compile Include="Utils\Utils.cs" />
-    <Compile Include="ObjectContainer\ObjectContainer.cs" />
-    <Compile Include="ObjectContainer\IObjectContainer.cs" />
     <Compile Include="Domain\Impl\DefaultAggregateRootInternalHandlerProvider.cs" />
     <Compile Include="Domain\Impl\DefaultAggregateRootFactory.cs" />
     <Compile Include="Utils\ConcurrencyUtils.cs" />
