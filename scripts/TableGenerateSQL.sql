@@ -122,11 +122,13 @@ CREATE TABLE [dbo].[EventSourcing_Sample_BookStoreItem](
 GO
 
 CREATE TABLE [dbo].[EventSourcing_Sample_BorrowedBook](
+	[LibraryId] [uniqueidentifier] NOT NULL,
 	[AccountId] [uniqueidentifier] NOT NULL,
 	[BookId] [uniqueidentifier] NOT NULL,
 	[Count] int NOT NULL
  CONSTRAINT [PK_EventSourcing_Sample_BorrowedBook] PRIMARY KEY CLUSTERED 
 (
+	[LibraryId] ASC,
 	[AccountId] ASC,
 	[BookId] ASC
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
@@ -151,6 +153,7 @@ GO
 
 CREATE TABLE [dbo].[EventSourcing_Sample_HandlingEvent](
 	[Id] [uniqueidentifier] NOT NULL,
+	[LibraryId] [uniqueidentifier] NOT NULL,
 	[BookId] [uniqueidentifier] NOT NULL,
 	[AccountId] [uniqueidentifier] NOT NULL,
 	[HandlingType] int NOT NULL,

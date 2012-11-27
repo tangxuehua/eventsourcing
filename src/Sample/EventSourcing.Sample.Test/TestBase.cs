@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Reflection;
 using CodeSharp.EventSourcing;
-using CodeSharp.EventSourcing.Container.StructureMap;
-using CodeSharp.EventSourcing.EventStore.NHibernate;
-using CodeSharp.EventSourcing.NHibernate;
-using CodeSharp.EventSourcing.SubscriptionStorage.NHibernate;
 
 namespace EventSourcing.Sample.Test
 {
@@ -16,23 +12,12 @@ namespace EventSourcing.Sample.Test
         {
             var modelAssembly = Assembly.Load("EventSourcing.Sample.Model");
             var applicationAssembly = Assembly.Load("EventSourcing.Sample.Application");
-            var assemblies = new Assembly[] { modelAssembly, applicationAssembly };
-
+            var eventSubscriberAssembly = Assembly.Load("EventSourcing.Sample.EventSubscribers");
+            var assemblies = new Assembly[] { modelAssembly, applicationAssembly, eventSubscriberAssembly };
+            var configAssembly = Assembly.GetExecutingAssembly();
             try
             {
-                Configuration.Create("EventSourcing.Sample.Test")
-                        .Initialize(new DefaultConfigurationInitializer(Assembly.GetExecutingAssembly()))
-                        .Container<StructureMapObjectContainer>(new StructureMapObjectContainer())
-                        .EventStore<NHibernateEventStore>()
-                        .SubscriptionStorage<NHibernateSubscriptionStorage>()
-                        .RegisterAggregateRootTypes(assemblies)
-                        .RegisterSourcableEvents(assemblies)
-                        .RegisterSourcableEventMappings(assemblies)
-                        .RegisterTypeNameMappings(assemblies)
-                        .RegisterAggregateRootInternalEventHandlers(assemblies)
-                        .RegisterAggregateEventHandlers(assemblies)
-                        .RegisterServices(assemblies)
-                        .NHibernate(assemblies);
+                Configuration.Config("EventSourcing.Sample.Test", configAssembly, assemblies);
             }
             catch (Exception e)
             {

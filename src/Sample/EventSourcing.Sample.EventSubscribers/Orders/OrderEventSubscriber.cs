@@ -1,58 +1,52 @@
-﻿using CodeSharp.EventSourcing;
-using CodeSharp.EventSourcing.NHibernate;
-using EventSourcing.Sample.Entities;
+﻿using System.Data;
+using CodeSharp.EventSourcing;
 using EventSourcing.Sample.Model.Orders;
 
 namespace EventSourcing.Sample.EventSubscribers
 {
     public class OrderEventSubscriber
     {
-        private ISessionHelper _sessionHelper;
+        private IDbConnection _connection;
+        private IDbTransaction _transaction;
 
-        public OrderEventSubscriber(ISessionHelper sessionHelper)
+        public OrderEventSubscriber(ICurrentDbTransactionProvider transactionProvider)
         {
-            _sessionHelper = sessionHelper;
+            _transaction = transactionProvider.CurrentTransaction;
+            _connection = _transaction.Connection;
         }
 
-        [AsyncEventHandler]
+        [SyncEventHandler]
         public void Handle(OrderCreated evnt)
         {
-            _sessionHelper.ExecuteAction((session) =>
-            {
-                session.Save(ObjectHelper.CreateObject<OrderEntity>(evnt));
-            });
+            _connection.Insert(new { Id = evnt.Id, Customer = evnt.Customer, CreatedTime = evnt.CreatedTime }, "eventsourcing_sample_order", _transaction);
         }
-        [AsyncEventHandler]
+        [SyncEventHandler]
         public void Handle(OrderItemAdded evnt)
         {
-            _sessionHelper.ExecuteAction((session) =>
-            {
-                session.Save(ObjectHelper.CreateObject<OrderItemEntity>(evnt));
-            });
+            _connection.Insert(evnt, "eventsourcing_sample_orderitem", _transaction);
         }
-        [AsyncEventHandler]
+        [SyncEventHandler]
         public void Handle(OrderItemAmountUpdated evnt)
         {
-            _sessionHelper.ExecuteAction((session) =>
-            {
-                var orderItem = _sessionHelper.QueryUnique<OrderItemEntity>(session, new { OrderId = evnt.OrderId, ProductId = evnt.ProductId });
-                ObjectHelper.UpdateObject<OrderItemEntity, OrderItemAmountUpdated>(orderItem, evnt, x => x.Amount);
-                session.Update(orderItem);
-            });
+            _connection.Update(
+                new { Amount = evnt.Amount },
+                new { OrderId = evnt.OrderId, ProductId = evnt.ProductId },
+                "eventsourcing_sample_orderitem",
+                _transaction);
         }
-        [AsyncEventHandler]
+        [SyncEventHandler]
         public void Handle(OrderItemRemoved evnt)
         {
-            _sessionHelper.ExecuteAction((session) =>
-            {
-                _sessionHelper.Delete<OrderItemEntity>(session, new { OrderId = evnt.OrderId, ProductId = evnt.ProductId });
-            });
+            _connection.Delete(
+                new { OrderId = evnt.OrderId, ProductId = evnt.ProductId },
+                "eventsourcing_sample_orderitem",
+                _transaction);
         }
-        [AsyncEventHandler]
+        [SyncEventHandler]
         public void Handle(OrderItemToRemoveNotExist evnt)
         {
             var logger = ObjectContainer.Resolve<CodeSharp.EventSourcing.ILoggerFactory>().Create("OrderEventSubscriber");
-            logger.Error("OrderItem to remove not exist.");
+            logger.Info("OrderItem to remove not exist.");
         }
     }
 }

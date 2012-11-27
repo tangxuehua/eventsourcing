@@ -19,7 +19,7 @@ namespace CodeSharp.EventSourcing.EventStore.NHibernate
 
         private IJsonSerializer _jsonSerializer;
         private ITypeNameMappingProvider _typeNameMappingProvider;
-        private ISourcableEventTypeProvider _aggregateSourcableEventMappingProvider;
+        private ISourcableEventTypeProvider _sourcableEventTypeProvider;
         private ISessionFactory _sessionFactory;
         private ILogger _logger;
 
@@ -28,15 +28,15 @@ namespace CodeSharp.EventSourcing.EventStore.NHibernate
         #region Constructors
 
         public NHibernateEventStore(
-            IJsonSerializer eventSerializer,
-            ITypeNameMappingProvider typeNameMapper,
-            ISourcableEventTypeProvider aggregateRootEventTypeProvider,
+            IJsonSerializer jsonSerializer,
+            ITypeNameMappingProvider typeNameMappingProvider,
+            ISourcableEventTypeProvider sourcableEventTypeProvider,
             ISessionFactory sessionFactory,
             ILoggerFactory loggerFactory)
         {
-            _jsonSerializer = eventSerializer;
-            _typeNameMappingProvider = typeNameMapper;
-            _aggregateSourcableEventMappingProvider = aggregateRootEventTypeProvider;
+            _jsonSerializer = jsonSerializer;
+            _typeNameMappingProvider = typeNameMappingProvider;
+            _sourcableEventTypeProvider = sourcableEventTypeProvider;
             _sessionFactory = sessionFactory;
             _logger = loggerFactory.Create("EventSourcing.EventStore.NHibernateEventStore");
         }
@@ -91,7 +91,7 @@ namespace CodeSharp.EventSourcing.EventStore.NHibernate
             var evnts = new List<SourcableEvent>();
             var session = _sessionFactory.OpenSession();
 
-            Type eventType = _aggregateSourcableEventMappingProvider.GetSourcableEventType(aggregateRootType);
+            Type eventType = _sourcableEventTypeProvider.GetSourcableEventType(aggregateRootType);
             ICriteria criteria = session.CreateCriteria(eventType);
             criteria.Add(Restrictions.Eq("AggregateRootId", aggregateRootId));
             criteria.Add(Restrictions.Eq("AggregateRootName", GetAggregateRootName(aggregateRootType)));

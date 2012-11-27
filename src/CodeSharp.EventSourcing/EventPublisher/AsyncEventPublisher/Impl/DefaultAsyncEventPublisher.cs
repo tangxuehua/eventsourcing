@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace CodeSharp.EventSourcing
 {
-    public class AsyncEventPublisher : IEventPublisher
+    public class DefaultAsyncEventPublisher : IAsyncEventPublisher
     {
         #region Private Variables
 
@@ -20,12 +20,12 @@ namespace CodeSharp.EventSourcing
 
         #region Constructors
 
-        public AsyncEventPublisher(ISubscriptionStorage subscriptionStorage, IMessageTransport messageTransport, IMessageSerializer messageSerializer, ILoggerFactory loggerFactory)
+        public DefaultAsyncEventPublisher(ISubscriptionStorage subscriptionStorage, IMessageTransport messageTransport, IMessageSerializer messageSerializer, ILoggerFactory loggerFactory)
         {
             _subscriptionStorage = subscriptionStorage;
             _messageTransport = messageTransport;
             _messageSerializer = messageSerializer;
-            _logger = loggerFactory.Create("EventSourcing.AsyncEventPublisher");
+            _logger = loggerFactory.Create("EventSourcing.DefaultAsyncEventPublisher");
         }
 
         #endregion

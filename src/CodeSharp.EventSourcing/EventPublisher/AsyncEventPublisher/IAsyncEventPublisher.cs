@@ -5,9 +5,9 @@ using System.Collections.Generic;
 namespace CodeSharp.EventSourcing
 {
     /// <summary>
-    /// Represents a event publisher to publish sourcable events.
+    /// Represents an async event publisher to publish sourcable events.
     /// </summary>
-    public interface IEventPublisher
+    public interface IAsyncEventPublisher
     {
         /// <summary>
         /// 分发单个事件

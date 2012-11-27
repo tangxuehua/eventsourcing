@@ -91,7 +91,7 @@ namespace CodeSharp.EventSourcing.Container.Unity
                 }
             }
         }
-        public void Register<TService, TImpl>(LifeStyle life = LifeStyle.Singleton) where TService : class where TImpl : TService
+        public void Register<TService, TImpl>(LifeStyle life = LifeStyle.Singleton) where TService : class where TImpl : class, TService
         {
             if (life == LifeStyle.Singleton)
             {
@@ -102,7 +102,9 @@ namespace CodeSharp.EventSourcing.Container.Unity
                 _unityContainer.RegisterType<TService, TImpl>();
             }
         }
-        public void Register<TService, TImpl>(string key, LifeStyle life = LifeStyle.Singleton) where TService : class where TImpl : TService
+        public void Register<TService, TImpl>(string key, LifeStyle life = LifeStyle.Singleton)
+            where TService : class
+            where TImpl : class, TService
         {
             if (life == LifeStyle.Singleton)
             {
@@ -113,7 +115,9 @@ namespace CodeSharp.EventSourcing.Container.Unity
                 _unityContainer.RegisterType<TService, TImpl>(key);
             }
         }
-        public void RegisterDefault<TService, TImpl>(LifeStyle life = LifeStyle.Singleton) where TService : class where TImpl : TService
+        public void RegisterDefault<TService, TImpl>(LifeStyle life = LifeStyle.Singleton)
+            where TService : class
+            where TImpl : class, TService
         {
             if (life == LifeStyle.Singleton)
             {
@@ -154,11 +158,11 @@ namespace CodeSharp.EventSourcing.Container.Unity
         {
             return _unityContainer.IsRegistered(type, key);
         }
-        public T Resolve<T>()
+        public T Resolve<T>() where T : class
         {
             return _unityContainer.Resolve<T>();
         }
-        public T Resolve<T>(string key)
+        public T Resolve<T>(string key) where T : class
         {
             return _unityContainer.Resolve<T>(key);
         }

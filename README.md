@@ -5,15 +5,18 @@ This is an open-source framework which implement the event sourcing pattern and 
 
 1. 运行源代码前先执行命令build nuget以获取外部依赖的程序集。具体步骤：在当前README.md文件所在目录，按住shit键，然后鼠标右键，在弹出的菜单项中选择“在此处打开命令窗口”，然后输入：build nuget，然后回车即可。注意：你的目录中不能包含空格，否则会出错！
 2. 如果要调试代码，需要先新建一个SQL数据库，比如名称叫EventSourcingSampleDB，然后在新建的数据库上执行SQL脚本：scripts\TableGenerateSQL.sql
-3. 修改数据库连接字符串，配置文件目录：src\Sample\EventSourcing.Sample.Test\ConfigFiles\Debug\nhibernate.config，修改文件中key=connection.connection_string的配置值即可
+3. 修改数据库连接字符串，配置文件目录：\src\Sample\EventSourcing.Sample.Test\ConfigFiles\Debug\eventsourcing.config，修改文件中key=connectionString的配置值即可
 4. 运行代码前需要安装MSMQ，否则会报错。要安装MSMQ很简单，到控制面板->所有程序->启动或关闭Windows功能，然后选择MSMQ进行安装即可。
+5. 如果要调试异步事件响应功能，需要启动EventSourcing.Sample.Host，同理运行前需要修改数据库连接字符串，在该工程所在目录的ConfigFiles\Debug子目录下。
+6. 目前提供了四个sample，两个采用同步事件响应（Order，MoneyTransfer），两个采用异步事件响应（Forum，BookBorrowAndReturn），具体请参看代码。
 
 补充说明：
 Sample中EventSourcing.Sample.Test，EventSourcing.Sample.Host这两个工程都是顶层应用。
 EventSourcing.Sample.Test用于以单元测试的方式来调用领域模型执行业务逻辑，产生Event Sourcing模式中的可溯源事件；
 EventSourcing.Sample.Host是一个宿主控制台应用程序，作为异步事件总线的事件订阅者端点，它会以异步的方式消费由Test工程产生的可溯源事件；
 
-所以运行代码时，如果你希望CQRS架构中的显示表中都有数据，那需要在运行Test工程前先运行EventSourcing.Sample.Host这个控制台应用程序。
+如果运行Order，MoneyTransfer这两个单元测试文件，则无需启动Host工程；
+如果运行Forum，BookBorrowAndReturn这两个单元测试文件，则需要启动Host工程，否则显示表中将不会有数据；
 
 
 ## License

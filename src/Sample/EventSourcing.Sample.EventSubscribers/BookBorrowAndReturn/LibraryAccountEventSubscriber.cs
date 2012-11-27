@@ -1,43 +1,44 @@
-﻿using CodeSharp.EventSourcing;
-using CodeSharp.EventSourcing.NHibernate;
-using EventSourcing.Sample.Entities;
+﻿using System.Linq;
+using CodeSharp.EventSourcing;
 using EventSourcing.Sample.Model.BookBorrowAndReturn;
 
 namespace EventSourcing.Sample.EventSubscribers
 {
     public class LibraryAccountEventSubscriber
     {
-        private ISessionHelper _sessionHelper;
+        private IDbConnectionFactory _connectionFactory;
 
-        public LibraryAccountEventSubscriber(ISessionHelper sessionHelper)
+        public LibraryAccountEventSubscriber(IDbConnectionFactory connectionFactory)
         {
-            _sessionHelper = sessionHelper;
+            _connectionFactory = connectionFactory;
         }
 
         [AsyncEventHandler]
         private void Handle(AccountCreated evnt)
         {
-            _sessionHelper.ExecuteAction((session) =>
+            using (var conn = _connectionFactory.OpenConnection())
             {
-                session.Save(ObjectHelper.CreateObject<LibraryAccountEntity>(evnt));
-            });
+                conn.Insert(evnt, "EventSourcing_Sample_LibraryAccount");
+            }
         }
         [AsyncEventHandler]
         private void Handle(BookBorrowed evnt)
         {
-            _sessionHelper.ExecuteAction((session) =>
+            using (var conn = _connectionFactory.OpenConnection())
             {
-                var borrowedBook = _sessionHelper.QueryUnique<BorrowedBookEntity>(session, new { AccountId = evnt.AccountId, BookId = evnt.BookId });
-                if (borrowedBook == null)
+                var key = new { LibraryId = evnt.LibraryId, AccountId = evnt.AccountId, BookId = evnt.BookId };
+                var borrowedBooks = conn.Query(key, "EventSourcing_Sample_BorrowedBook");
+
+                if (borrowedBooks.Count() == 0)
                 {
-                    session.Save(ObjectHelper.CreateObject<BorrowedBookEntity>(evnt));
+                    conn.Insert(evnt, "EventSourcing_Sample_BorrowedBook");
                 }
                 else
                 {
-                    borrowedBook.Count += evnt.Count;
-                    session.Update(borrowedBook);
+                    var originalCount = (int)borrowedBooks.First().Count;
+                    conn.Update(new { Count = originalCount + evnt.Count }, key, "EventSourcing_Sample_BorrowedBook");
                 }
-            });
+            }
         }
     }
 }

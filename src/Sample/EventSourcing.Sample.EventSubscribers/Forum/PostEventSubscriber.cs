@@ -1,26 +1,24 @@
 ﻿using CodeSharp.EventSourcing;
-using CodeSharp.EventSourcing.NHibernate;
-using EventSourcing.Sample.Entities;
 using EventSourcing.Sample.Model.Forum;
 
 namespace EventSourcing.Sample.EventSubscribers
 {
     public class PostEventSubscriber
     {
-        private ISessionHelper _sessionHelper;
+        private IDbConnectionFactory _connectionFactory;
 
-        public PostEventSubscriber(ISessionHelper sessionHelper)
+        public PostEventSubscriber(IDbConnectionFactory connectionFactory)
         {
-            _sessionHelper = sessionHelper;
+            _connectionFactory = connectionFactory;
         }
 
         [AsyncEventHandler]
         private void Handle(PostCreated evnt)
         {
-            _sessionHelper.ExecuteAction((session) =>
+            using (var conn = _connectionFactory.OpenConnection())
             {
-                session.Save(ObjectHelper.CreateObject<PostEntity>(evnt));
-            });
+                conn.Insert(evnt, "EventSourcing_Sample_Post");
+            }
         }
     }
 }

@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Reflection;
 using CodeSharp.EventSourcing;
-using CodeSharp.EventSourcing.Container.StructureMap;
-using CodeSharp.EventSourcing.NHibernate;
-using CodeSharp.EventSourcing.SubscriptionStorage.NHibernate;
 
 namespace EventSourcing.Sample.Host
 {
@@ -21,20 +18,10 @@ namespace EventSourcing.Sample.Host
 
         private static void ConfigEventSourcing()
         {
-            var entityAssembly = Assembly.Load("EventSourcing.Sample.Entities");
-            var mappingAssembly = Assembly.Load("EventSourcing.Sample.Entities.Mappings");
             var eventSubscriberAssembly = Assembly.Load("EventSourcing.Sample.EventSubscribers");
-            var assemblies = new Assembly[] { entityAssembly, mappingAssembly, eventSubscriberAssembly };
+            var configAssembly = Assembly.GetExecutingAssembly();
 
-            Configuration
-                .Create("EventSourcing.Sample.Host")
-                .Initialize(new DefaultConfigurationInitializer(Assembly.GetExecutingAssembly()))
-                .Container<StructureMapObjectContainer>(new StructureMapObjectContainer())
-                .SubscriptionStorage<NHibernateSubscriptionStorage>()
-                .RegisterAsyncEventHandlers(assemblies)
-                .RegisterEventSubscribers(assemblies)
-                .NHibernate(assemblies)
-                .StartEventSubscriberEndpoint();
+            Configuration.Config("EventSourcing.Sample.Host", configAssembly, eventSubscriberAssembly).StartEventSubscriberEndpoint();
         }
     }
 }

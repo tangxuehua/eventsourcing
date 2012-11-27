@@ -1,36 +1,40 @@
-﻿using CodeSharp.EventSourcing;
-using CodeSharp.EventSourcing.NHibernate;
-using EventSourcing.Sample.Entities;
+﻿using System.Data;
+using CodeSharp.EventSourcing;
 using EventSourcing.Sample.Model.MoneyTransfer;
 
 namespace EventSourcing.Sample.EventSubscribers
 {
     public class BankAccountEventSubscriber
     {
-        private ISessionHelper _sessionHelper;
+        private IDbConnection _connection;
+        private IDbTransaction _transaction;
 
-        public BankAccountEventSubscriber(ISessionHelper sessionHelper)
+        public BankAccountEventSubscriber(ICurrentDbTransactionProvider transactionProvider)
         {
-            _sessionHelper = sessionHelper;
+            _transaction = transactionProvider.CurrentTransaction;
+            _connection = _transaction.Connection;
         }
 
-        [AsyncEventHandler]
+        [SyncEventHandler]
         private void Handle(BankAccountCreated evnt)
         {
-            _sessionHelper.ExecuteAction((session) =>
-            {
-                session.Save(ObjectHelper.CreateObject<BankAccountEntity>(evnt));
-            });
+            _connection.Insert(
+                new
+                {
+                    Id = evnt.Id,
+                    AccountNumber = evnt.AccountNumber,
+                    Customer = evnt.Customer,
+                    Balance = 0
+                },
+                "EventSourcing_Sample_BankAccount", _transaction);
         }
-        [AsyncEventHandler]
+        [SyncEventHandler]
         private void Handle(AccountBalanceUpdated evnt)
         {
-            _sessionHelper.ExecuteAction((session) =>
-            {
-                var bankAccount = session.Get<BankAccountEntity>(evnt.BankAccountId);
-                bankAccount.Balance = evnt.Balance;
-                session.Update(bankAccount);
-            });
+            _connection.Update(
+                new { Balance = evnt.Balance },
+                new { Id = evnt.BankAccountId },
+                "EventSourcing_Sample_BankAccount", _transaction);
         }
     }
 }

@@ -79,7 +79,7 @@ namespace CodeSharp.EventSourcing.Container.StructureMap
                 }
             }
         }
-        public void Register<TService, TImpl>(LifeStyle life) where TService : class where TImpl : TService
+        public void Register<TService, TImpl>(LifeStyle life) where TService : class where TImpl : class, TService
         {
             if (life == LifeStyle.Singleton)
             {
@@ -90,7 +90,7 @@ namespace CodeSharp.EventSourcing.Container.StructureMap
                 ObjectFactory.Configure(x => x.For<TService>().Transient().Use<TImpl>());
             }
         }
-        public void Register<TService, TImpl>(string key, LifeStyle life = LifeStyle.Singleton) where TService : class where TImpl : TService
+        public void Register<TService, TImpl>(string key, LifeStyle life = LifeStyle.Singleton) where TService : class where TImpl : class, TService
         {
             if (life == LifeStyle.Singleton)
             {
@@ -101,7 +101,7 @@ namespace CodeSharp.EventSourcing.Container.StructureMap
                 ObjectFactory.Configure(x => x.For<TService>().Transient().Use<TImpl>().Named(key));
             }
         }
-        public void RegisterDefault<TService, TImpl>(LifeStyle life) where TService : class where TImpl : TService
+        public void RegisterDefault<TService, TImpl>(LifeStyle life) where TService : class where TImpl : class, TService
         {
             if (life == LifeStyle.Singleton)
             {
@@ -142,11 +142,11 @@ namespace CodeSharp.EventSourcing.Container.StructureMap
         {
             return ObjectFactory.TryGetInstance(type, key) != null;
         }
-        public T Resolve<T>()
+        public T Resolve<T>() where T : class
         {
             return ObjectFactory.GetInstance<T>();
         }
-        public T Resolve<T>(string key)
+        public T Resolve<T>(string key) where T : class
         {
             return ObjectFactory.TryGetInstance<T>(key);
         }

@@ -1,26 +1,24 @@
-﻿using CodeSharp.EventSourcing;
-using CodeSharp.EventSourcing.NHibernate;
-using EventSourcing.Sample.Entities;
+﻿using System.Data;
+using CodeSharp.EventSourcing;
 using EventSourcing.Sample.Model.MoneyTransfer;
 
 namespace EventSourcing.Sample.EventSubscribers
 {
     public class BalanceChangeHistoryEventSubscriber
     {
-        private ISessionHelper _sessionHelper;
+        private IDbConnection _connection;
+        private IDbTransaction _transaction;
 
-        public BalanceChangeHistoryEventSubscriber(ISessionHelper sessionHelper)
+        public BalanceChangeHistoryEventSubscriber(ICurrentDbTransactionProvider transactionProvider)
         {
-            _sessionHelper = sessionHelper;
+            _transaction = transactionProvider.CurrentTransaction;
+            _connection = _transaction.Connection;
         }
 
-        [AsyncEventHandler]
+        [SyncEventHandler]
         private void Handle(BalanceChangeHistoryCreated evnt)
         {
-            _sessionHelper.ExecuteAction((session) =>
-            {
-                session.Save(ObjectHelper.CreateObject<BalanceChangeHistoryEntity>(evnt));
-            });
+            _connection.Insert(evnt, "EventSourcing_Sample_BalanceChangeHistory", _transaction);
         }
     }
 }

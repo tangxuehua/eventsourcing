@@ -37,14 +37,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="FluentNHibernate, Version=1.3.0.733, Culture=neutral, PublicKeyToken=8aa435e3cb308880, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\FluentNHibernate.1.3.0.733\lib\FluentNHibernate.dll</HintPath>
-    </Reference>
-    <Reference Include="Iesi.Collections, Version=1.0.1.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Iesi.Collections.3.2.0.4000\lib\Net35\Iesi.Collections.dll</HintPath>
-    </Reference>
     <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\log4net.1.2.10\lib\2.0\log4net.dll</HintPath>
@@ -53,16 +45,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\Newtonsoft.Json.4.5.10\lib\net40\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="NHibernate, Version=3.3.1.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\NHibernate.3.3.1.4000\lib\Net35\NHibernate.dll</HintPath>
-    </Reference>
     <Reference Include="nunit.framework, Version=2.6.1.12217, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\NUnit.2.6.1\lib\nunit.framework.dll</HintPath>
-    </Reference>
-    <Reference Include="StructureMap, Version=2.6.4.0, Culture=neutral, PublicKeyToken=e60ad81abae3c223, processorArchitecture=MSIL">
-      <HintPath>..\..\..\packages\structuremap.2.6.4.1\lib\net40\StructureMap.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -93,17 +78,13 @@
       <Project>{f884f01a-ed67-4f21-8576-fd2588491b24}</Project>
       <Name>CodeSharp.EventSourcing</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Extensions\CodeSharp.EventSourcing.Container.StructureMap\CodeSharp.EventSourcing.Container.StructureMap.csproj">
-      <Project>{5CA1D7A2-D739-4B46-971C-3A205C6C3951}</Project>
-      <Name>CodeSharp.EventSourcing.Container.StructureMap</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Extensions\CodeSharp.EventSourcing.NHibernate\CodeSharp.EventSourcing.NHibernate.csproj">
-      <Project>{986B1FC3-AFDA-4D9D-A340-298DECA2B0FB}</Project>
-      <Name>CodeSharp.EventSourcing.NHibernate</Name>
-    </ProjectReference>
     <ProjectReference Include="..\EventSourcing.Sample.Application\EventSourcing.Sample.Application.csproj">
       <Project>{01ba7824-d469-43a7-bd6d-3fd5db2c537b}</Project>
       <Name>EventSourcing.Sample.Application</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EventSourcing.Sample.EventSubscribers\EventSourcing.Sample.EventSubscribers.csproj">
+      <Project>{BC2C4E31-AFFD-433A-815E-A92889E81265}</Project>
+      <Name>EventSourcing.Sample.EventSubscribers</Name>
     </ProjectReference>
     <ProjectReference Include="..\EventSourcing.Sample.Model\EventSourcing.Sample.Model.csproj">
       <Project>{b2e0767e-3441-493e-9acf-ca01100e2741}</Project>
@@ -114,7 +95,6 @@
     <None Include="app.config" />
     <EmbeddedResource Include="ConfigFiles\Debug\log4net.config" />
     <EmbeddedResource Include="ConfigFiles\Debug\eventsourcing.config" />
-    <EmbeddedResource Include="ConfigFiles\Debug\nhibernate.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

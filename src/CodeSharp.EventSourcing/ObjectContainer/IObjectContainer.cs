@@ -33,7 +33,7 @@ namespace CodeSharp.EventSourcing
         /// <typeparam name="TService"></typeparam>
         /// <typeparam name="TImpl"></typeparam>
         /// <param name="life"></param>
-        void Register<TService, TImpl>(LifeStyle life) where TService : class where TImpl : TService;
+        void Register<TService, TImpl>(LifeStyle life) where TService : class where TImpl : class, TService;
         /// <summary>
         /// 注册给定接口的实现
         /// </summary>
@@ -41,14 +41,14 @@ namespace CodeSharp.EventSourcing
         /// <typeparam name="TImpl"></typeparam>
         /// <param name="key"></param>
         /// <param name="life"></param>
-        void Register<TService, TImpl>(string key, LifeStyle life = LifeStyle.Singleton) where TService : class where TImpl : TService;
+        void Register<TService, TImpl>(string key, LifeStyle life = LifeStyle.Singleton) where TService : class where TImpl : class, TService;
         /// <summary>
         /// 注册给定接口的默认实现
         /// </summary>
         /// <typeparam name="TService"></typeparam>
         /// <typeparam name="TImpl"></typeparam>
         /// <param name="life"></param>
-        void RegisterDefault<TService, TImpl>(LifeStyle life) where TService : class where TImpl : TService;
+        void RegisterDefault<TService, TImpl>(LifeStyle life) where TService : class where TImpl : class, TService;
         /// <summary>
         /// 注册给定类型的实例
         /// </summary>
@@ -82,14 +82,14 @@ namespace CodeSharp.EventSourcing
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        T Resolve<T>();
+        T Resolve<T>() where T : class;
         /// <summary>
         /// 获取给定类型的一个实例
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
         /// <returns></returns>
-        T Resolve<T>(string key);
+        T Resolve<T>(string key) where T : class;
         /// <summary>
         /// 获取给定类型的一个实例
         /// </summary>

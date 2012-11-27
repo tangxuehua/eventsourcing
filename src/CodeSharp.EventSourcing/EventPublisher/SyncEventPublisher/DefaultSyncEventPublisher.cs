@@ -4,15 +4,15 @@ using System.Collections.Generic;
 
 namespace CodeSharp.EventSourcing
 {
-    public class SyncEventPublisher : IEventPublisher
+    public class DefaultSyncEventPublisher : ISyncEventPublisher
     {
         private ISyncEventHandlerProvider _syncEventHandlerProvider;
         private ILogger _logger;
 
-        public SyncEventPublisher(ISyncEventHandlerProvider syncEventHandlerProvider, ILoggerFactory loggerFactory)
+        public DefaultSyncEventPublisher(ISyncEventHandlerProvider syncEventHandlerProvider, ILoggerFactory loggerFactory)
         {
             _syncEventHandlerProvider = syncEventHandlerProvider;
-            _logger = loggerFactory.Create("EventSourcing.SyncEventPublisher");
+            _logger = loggerFactory.Create("EventSourcing.DefaultSyncEventPublisher");
         }
 
         public void PublishEvent(object evnt)

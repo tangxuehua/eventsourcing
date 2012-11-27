@@ -17,6 +17,8 @@ namespace CodeSharp.EventSourcing
             _container = container;
         }
 
+        public static IObjectContainer Container { get { return _container; } }
+
         /// <summary>
         /// 注册一个给定的类型及其所有实现的接口
         /// </summary>
@@ -49,7 +51,7 @@ namespace CodeSharp.EventSourcing
         /// <typeparam name="TService"></typeparam>
         /// <typeparam name="TImpl"></typeparam>
         /// <param name="life"></param>
-        public static void Register<TService, TImpl>(LifeStyle life = LifeStyle.Singleton) where TService : class where TImpl : TService
+        public static void Register<TService, TImpl>(LifeStyle life = LifeStyle.Singleton) where TService : class where TImpl : class, TService
         {
             _container.Register<TService, TImpl>(life);
         }
@@ -60,7 +62,9 @@ namespace CodeSharp.EventSourcing
         /// <typeparam name="TImpl"></typeparam>
         /// <param name="key"></param>
         /// <param name="life"></param>
-        public static void Register<TService, TImpl>(string key, LifeStyle life = LifeStyle.Singleton) where TService : class where TImpl : TService
+        public static void Register<TService, TImpl>(string key, LifeStyle life = LifeStyle.Singleton)
+            where TService : class
+            where TImpl : class, TService
         {
             _container.Register<TService, TImpl>(key, life);
         }
@@ -70,7 +74,9 @@ namespace CodeSharp.EventSourcing
         /// <typeparam name="TService"></typeparam>
         /// <typeparam name="TImpl"></typeparam>
         /// <param name="life"></param>
-        public static void RegisterDefault<TService, TImpl>(LifeStyle life = LifeStyle.Singleton) where TService : class where TImpl : TService
+        public static void RegisterDefault<TService, TImpl>(LifeStyle life = LifeStyle.Singleton)
+            where TService : class
+            where TImpl : class, TService
         {
             _container.RegisterDefault<TService, TImpl>(life);
         }
@@ -119,7 +125,7 @@ namespace CodeSharp.EventSourcing
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static T Resolve<T>()
+        public static T Resolve<T>() where T : class
         {
             return _container.Resolve<T>();
         }
@@ -129,7 +135,7 @@ namespace CodeSharp.EventSourcing
         /// <typeparam name="T"></typeparam>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static T Resolve<T>(string key)
+        public static T Resolve<T>(string key) where T : class
         {
             return _container.Resolve<T>(key);
         }

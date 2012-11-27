@@ -1,25 +1,17 @@
-﻿//Copyright (c) CodeSharp.  All rights reserved.
-
-using System;
+﻿using System;
 using System.Linq;
 using System.Reflection;
-using Castle.MicroKernel.Registration;
-using Castle.Windsor;
+using TinyIoC;
 
-namespace CodeSharp.EventSourcing.Container.Windsor
+namespace CodeSharp.EventSourcing
 {
-    public class WindsorObjectContainer : IObjectContainer
+    public class TinyIoCObjectContainer : IObjectContainer
     {
-        private IWindsorContainer _windsorContainer;
+        private TinyIoCContainer _container;
 
-        public WindsorObjectContainer(IWindsorContainer windsorContainer)
+        public TinyIoCObjectContainer()
         {
-            _windsorContainer = windsorContainer;
-        }
-
-        public IWindsorContainer WindsorContainer
-        {
-            get { return _windsorContainer; }
+            _container = TinyIoCContainer.Current;
         }
 
         public void RegisterType(Type type)
@@ -28,14 +20,14 @@ namespace CodeSharp.EventSourcing.Container.Windsor
 
             if (!IsRegistered(type))
             {
-                _windsorContainer.Register(Component.For(type).ImplementedBy(type).Life(life));
+                _container.Register(type).Life(life);
             }
 
             foreach (var interfaceType in type.GetInterfaces())
             {
                 if (!IsRegistered(interfaceType))
                 {
-                    _windsorContainer.Register(Component.For(interfaceType).ImplementedBy(type).Life(life));
+                    _container.Register(interfaceType, type).Life(life);
                 }
             }
         }
@@ -45,14 +37,14 @@ namespace CodeSharp.EventSourcing.Container.Windsor
 
             if (!IsRegistered(type, key))
             {
-                _windsorContainer.Register(Component.For(type).ImplementedBy(type).Named(key).Life(life));
+                _container.Register(type, key).Life(life);
             }
 
             foreach (var interfaceType in type.GetInterfaces())
             {
                 if (!IsRegistered(interfaceType, key))
                 {
-                    _windsorContainer.Register(Component.For(interfaceType).ImplementedBy(type).Named(key).Life(life));
+                    _container.Register(interfaceType, type, key).Life(life);
                 }
             }
         }
@@ -68,71 +60,66 @@ namespace CodeSharp.EventSourcing.Container.Windsor
         }
         public void Register<TService, TImpl>(LifeStyle life) where TService : class where TImpl : class, TService
         {
-            _windsorContainer.Register(Component.For<TService>().ImplementedBy<TImpl>().Life(life));
+            _container.Register<TService, TImpl>().Life(life);
         }
         public void Register<TService, TImpl>(string key, LifeStyle life = LifeStyle.Singleton) where TService : class where TImpl : class, TService
         {
-            _windsorContainer.Register(Component.For<TService>().ImplementedBy<TImpl>().Named(key).Life(life));
+            _container.Register<TService, TImpl>(key).Life(life);
         }
         public void RegisterDefault<TService, TImpl>(LifeStyle life) where TService : class where TImpl : class, TService
         {
-            _windsorContainer.Register(Component.For<TService>().ImplementedBy<TImpl>().IsDefault().Life(life));
+            _container.Register<TService, TImpl>().Life(life);
         }
         public void Register<T>(T instance, LifeStyle life) where T : class
         {
-            _windsorContainer.Register(Component.For<T>().Instance(instance).Life(life));
+            _container.Register<T>(instance).Life(life);
         }
         public void Register<T>(T instance, string key, LifeStyle life) where T : class
         {
-            _windsorContainer.Register(Component.For<T>().Instance(instance).Named(key).Life(life));
+            _container.Register<T>(instance, key).Life(life);
         }
         public bool IsRegistered(Type type)
         {
-            return _windsorContainer.Kernel.HasComponent(type);
+            return _container.CanResolve(type);
         }
         public bool IsRegistered(Type type, string key)
         {
-            try
-            {
-                return _windsorContainer.Kernel.Resolve(key, type) != null;
-            }
-            catch
-            {
-                return false;
-            }
+            return _container.CanResolve(type, key, ResolveOptions.Default);
         }
         public T Resolve<T>() where T : class
         {
-            return _windsorContainer.Resolve<T>();
+            return _container.Resolve<T>();
         }
         public T Resolve<T>(string key) where T : class
         {
-            return _windsorContainer.Resolve<T>(key);
+            return _container.Resolve<T>(key);
         }
         public object Resolve(Type type)
         {
-            return _windsorContainer.Resolve(type);
+            return _container.Resolve(type);
         }
         public object Resolve(string key, Type type)
         {
-            return _windsorContainer.Resolve(key, type);
+            return _container.Resolve(type, key, ResolveOptions.Default);
         }
 
-        private static LifeStyle ParseLife(Type type)
+        private LifeStyle ParseLife(Type type)
         {
             var componentAttributes = type.GetCustomAttributes(typeof(ComponentAttribute), false);
             return componentAttributes.Count() <= 0 ? LifeStyle.Transient : (componentAttributes[0] as ComponentAttribute).LifeStyle;
         }
     }
-    public static class Extensions
+
+    public static class TinyIoCContainerExtensions
     {
-        public static ComponentRegistration<T> Life<T>(this ComponentRegistration<T> registration, LifeStyle life) where T : class
+        public static TinyIoCContainer.RegisterOptions Life(this TinyIoCContainer.RegisterOptions registration, LifeStyle life)
         {
             if (life == LifeStyle.Singleton)
             {
-                return registration.LifeStyle.Singleton;
+                return registration.AsSingleton();
             }
-            return registration.LifeStyle.Transient;
+            return registration.AsMultiInstance();
         }
     }
 }
+

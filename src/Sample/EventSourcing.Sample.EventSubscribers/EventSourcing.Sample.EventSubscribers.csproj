@@ -30,9 +30,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NHibernate">
-      <HintPath>..\..\..\packages\NHibernate.3.3.1.4000\lib\Net35\NHibernate.dll</HintPath>
-    </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -59,19 +57,12 @@
       <Project>{f884f01a-ed67-4f21-8576-fd2588491b24}</Project>
       <Name>CodeSharp.EventSourcing</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Extensions\CodeSharp.EventSourcing.NHibernate\CodeSharp.EventSourcing.NHibernate.csproj">
-      <Project>{986B1FC3-AFDA-4D9D-A340-298DECA2B0FB}</Project>
-      <Name>CodeSharp.EventSourcing.NHibernate</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EventSourcing.Sample.Entities\EventSourcing.Sample.Entities.csproj">
-      <Project>{b6bd8f2b-7375-4537-955d-5d564498f7e5}</Project>
-      <Name>EventSourcing.Sample.Entities</Name>
-    </ProjectReference>
     <ProjectReference Include="..\EventSourcing.Sample.Model\EventSourcing.Sample.Model.csproj">
       <Project>{b2e0767e-3441-493e-9acf-ca01100e2741}</Project>
       <Name>EventSourcing.Sample.Model</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

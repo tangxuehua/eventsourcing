@@ -1,26 +1,24 @@
 ﻿using CodeSharp.EventSourcing;
-using CodeSharp.EventSourcing.NHibernate;
-using EventSourcing.Sample.Entities;
 using EventSourcing.Sample.Model.Forum;
 
 namespace EventSourcing.Sample.EventSubscribers
 {
     public class UserEventSubscriber
     {
-        private ISessionHelper _sessionHelper;
+        private IDbConnectionFactory _connectionFactory;
 
-        public UserEventSubscriber(ISessionHelper sessionHelper)
+        public UserEventSubscriber(IDbConnectionFactory connectionFactory)
         {
-            _sessionHelper = sessionHelper;
+            _connectionFactory = connectionFactory;
         }
 
         [AsyncEventHandler]
         private void Handle(UserCreated evnt)
         {
-            _sessionHelper.ExecuteAction((session) =>
+            using (var conn = _connectionFactory.OpenConnection())
             {
-                session.Save(ObjectHelper.CreateObject<UserEntity>(evnt));
-            });
+                conn.Insert(evnt, "EventSourcing_Sample_User");
+            }
         }
     }
 }

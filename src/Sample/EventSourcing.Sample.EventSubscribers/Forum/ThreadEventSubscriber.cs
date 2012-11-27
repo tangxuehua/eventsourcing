@@ -1,63 +1,70 @@
 ﻿using CodeSharp.EventSourcing;
-using CodeSharp.EventSourcing.NHibernate;
-using EventSourcing.Sample.Entities;
 using EventSourcing.Sample.Model.Forum;
 
 namespace EventSourcing.Sample.EventSubscribers
 {
     public class ThreadEventSubscriber
     {
-        private ISessionHelper _sessionHelper;
+        private IDbConnectionFactory _connectionFactory;
 
-        public ThreadEventSubscriber(ISessionHelper sessionHelper)
+        public ThreadEventSubscriber(IDbConnectionFactory connectionFactory)
         {
-            _sessionHelper = sessionHelper;
+            _connectionFactory = connectionFactory;
         }
 
         [AsyncEventHandler]
         private void Handle(ThreadCreated evnt)
         {
-            _sessionHelper.ExecuteAction((session) =>
+            using (var conn = _connectionFactory.OpenConnection())
             {
-                var thread = ObjectHelper.CreateObject<ThreadEntity>(evnt);
-                thread.IsStick = evnt.StickInfo.IsStick;
-                thread.StickDate = evnt.StickInfo.StickDate;
-                session.Save(thread);
-            });
+                conn.Insert(
+                    new
+                    {
+                        Id = evnt.Id,
+                        Subject = evnt.Subject,
+                        Body = evnt.Body,
+                        ForumId = evnt.ForumId,
+                        AuthorId = evnt.AuthorId,
+                        Marks = evnt.Marks,
+                        Status = evnt.Status,
+                        CreateTime = evnt.CreateTime,
+                        IsStick = evnt.StickInfo.IsStick,
+                        StickDate = evnt.StickInfo.StickDate
+                    }, "EventSourcing_Sample_Thread");
+            }
         }
         [AsyncEventHandler]
         private void Handle(ContentChanged evnt)
         {
-            _sessionHelper.ExecuteAction((session) =>
+            using (var conn = _connectionFactory.OpenConnection())
             {
-                var thread = session.Get<ThreadEntity>(evnt.Id);
-                ObjectHelper.UpdateObject<ThreadEntity, ContentChanged>(thread, evnt,
-                    x => x.Subject,
-                    x => x.Body,
-                    x => x.Marks);
-                session.Update(thread);
-            });
+                conn.Update(
+                    new { Subject = evnt.Subject, Body = evnt.Body, Marks = evnt.Marks },
+                    new { Id = evnt.Id },
+                    "EventSourcing_Sample_Thread");
+            }
         }
         [AsyncEventHandler]
         private void Handle(ThreadStatusChanged evnt)
         {
-            _sessionHelper.ExecuteAction((session) =>
+            using (var conn = _connectionFactory.OpenConnection())
             {
-                var thread = session.Get<ThreadEntity>(evnt.Id);
-                thread.Status = (int)evnt.Status;
-                session.Update(thread);
-            });
+                conn.Update(
+                    new { Status = evnt.Status, },
+                    new { Id = evnt.Id },
+                    "EventSourcing_Sample_Thread");
+            }
         }
         [AsyncEventHandler]
         private void Handle(ThreadStickInfoChanged evnt)
         {
-            _sessionHelper.ExecuteAction((session) =>
+            using (var conn = _connectionFactory.OpenConnection())
             {
-                var thread = session.Get<ThreadEntity>(evnt.Id);
-                thread.IsStick = evnt.StickInfo.IsStick;
-                thread.StickDate = evnt.StickInfo.StickDate;
-                session.Update(thread);
-            });
+                conn.Update(
+                    new { IsStick = evnt.StickInfo.IsStick, StickDate = evnt.StickInfo.StickDate },
+                    new { Id = evnt.Id },
+                    "EventSourcing_Sample_Thread");
+            }
         }
     }
 }

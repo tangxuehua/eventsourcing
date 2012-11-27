@@ -50,10 +50,14 @@
     <Compile Include="Domain\Impl\DefaultTypeNameMappingProvider.cs" />
     <Compile Include="Domain\ITypeNameMappingProvider.cs" />
     <Compile Include="Domain\ISnapshotTypeProvider.cs" />
+    <Compile Include="EventPublisher\AsyncEventPublisher\IAsyncEventPublisher.cs" />
+    <Compile Include="EventPublisher\SyncEventPublisher\ISyncEventPublisher.cs" />
+    <Compile Include="ObjectContainer\TinyIoC.cs" />
+    <Compile Include="ObjectContainer\TinyIoCObjectContainer.cs" />
+    <Compile Include="Storage\Impl\DefaultSubscriptionStorage.cs" />
     <Compile Include="EventSubscriber\IEventSubscriberEndpoint.cs" />
     <Compile Include="EventPublisher\AsyncEventPublisher\IAsyncEventHandlerProvider.cs" />
     <Compile Include="EventSubscriber\DefaultEventSubscriberEndpoint.cs" />
-    <Compile Include="EventPublisher\DefaultEventPublisher.cs" />
     <Compile Include="EventPublisher\EventHandlerProvider\AttributeBasedEventHandlerProvider.cs" />
     <Compile Include="EventPublisher\EventHandlerProvider\InterfaceBasedEventHandlerProvider.cs" />
     <Compile Include="EventPublisher\EventHandlerMetaData.cs" />
@@ -62,15 +66,26 @@
     <Compile Include="EventPublisher\EventHandlerProvider\CompositeEventHandlerProvider.cs" />
     <Compile Include="EventPublisher\SyncEventPublisher\ISyncEventHandlerProvider.cs" />
     <Compile Include="EventPublisher\SyncEventPublisher\DefaultSyncEventHandlerProvider.cs" />
-    <Compile Include="EventPublisher\SyncEventPublisher\SyncEventPublisher.cs" />
-    <Compile Include="EventPublisher\IEventPublisher.cs" />
-    <Compile Include="EventPublisher\CompositeEventPublisher.cs" />
+    <Compile Include="EventPublisher\SyncEventPublisher\DefaultSyncEventPublisher.cs" />
     <Compile Include="LifetimeManager\DynamicLifetimeManager.cs" />
     <Compile Include="ObjectContainer\ComponentAttribute.cs" />
     <Compile Include="ObjectContainer\IObjectContainer.cs" />
     <Compile Include="ObjectContainer\ObjectContainer.cs" />
-    <Compile Include="Storage\EmptySnapshotStore.cs" />
-    <Compile Include="Storage\EmptyEventStore.cs" />
+    <Compile Include="Storage\Impl\EmptySnapshotStore.cs" />
+    <Compile Include="Storage\Impl\DefaultEventStore.cs" />
+    <Compile Include="Storage\ISourcableEventTableProvider.cs" />
+    <Compile Include="Storage\IAggregateRootVersionTableProvider.cs" />
+    <Compile Include="Storage\Impl\DefaultAggregateRootVersionTableProvider.cs" />
+    <Compile Include="Storage\Impl\DefaultSourcableEventTableProvider.cs" />
+    <Compile Include="TransactionManager\ContextTransactionLifetimeManager\CallContextContextTransactionLifetimeManager.cs" />
+    <Compile Include="TransactionManager\ContextTransactionLifetimeManager\DynamicContextTransactionLifetimeManager.cs" />
+    <Compile Include="TransactionManager\ContextTransactionLifetimeManager\HttpContextContextTransactionLifetimeManager.cs" />
+    <Compile Include="TransactionManager\IContextTransactionManager.cs" />
+    <Compile Include="TransactionManager\IContextTransaction.cs" />
+    <Compile Include="TransactionManager\SqlContextTransaction.cs" />
+    <Compile Include="TransactionManager\SqlContextTransactionManager.cs" />
+    <Compile Include="TransactionManager\IContextTransactionLifetimeManager.cs" />
+    <Compile Include="TransactionManager\ICurrentDbTransactionProvider.cs" />
     <Compile Include="Utils\SourcableEventAggregateHandlerCaller.cs" />
     <Compile Include="Utils\AggregateRootLocator.cs" />
     <Compile Include="Domain\Impl\DefaultAggregateRootTypeProvider.cs" />
@@ -87,13 +102,13 @@
     <Compile Include="Logger\Log4NetLogger.cs" />
     <Compile Include="Logger\Log4NetLoggerFactory.cs" />
     <Compile Include="EventPublisher\AsyncEventPublisher\AsyncEventHandlerAttribute.cs" />
-    <Compile Include="EventPublisher\AsyncEventPublisher\Impl\AsyncEventPublisher.cs" />
+    <Compile Include="EventPublisher\AsyncEventPublisher\Impl\DefaultAsyncEventPublisher.cs" />
     <Compile Include="EventPublisher\AsyncEventPublisher\Address.cs" />
     <Compile Include="EventPublisher\AsyncEventPublisher\Impl\BinaryMessageSerializer.cs" />
     <Compile Include="EventPublisher\AsyncEventPublisher\Impl\JsonMessageSerializer.cs" />
     <Compile Include="EventPublisher\AsyncEventPublisher\Message.cs" />
     <Compile Include="EventSourcingException.cs" />
-    <Compile Include="EventPublisher\AsyncEventPublisher\Impl\InMemorySubscriptionStorage.cs" />
+    <Compile Include="Storage\Impl\InMemorySubscriptionStorage.cs" />
     <Compile Include="EventPublisher\AsyncEventPublisher\Impl\MsmqMessageTransport.cs" />
     <Compile Include="EventPublisher\AsyncEventPublisher\MsmqUtilities.cs" />
     <Compile Include="EventPublisher\AsyncEventPublisher\Headers.cs" />
@@ -102,7 +117,7 @@
     <Compile Include="EventPublisher\AsyncEventPublisher\IMessageTransport.cs" />
     <Compile Include="EventPublisher\SyncEventPublisher\SyncEventHandlerAttribute.cs" />
     <Compile Include="Domain\ValueObject.cs" />
-    <Compile Include="EventPublisher\AsyncEventPublisher\ISubscriptionStorage.cs" />
+    <Compile Include="Storage\ISubscriptionStorage.cs" />
     <Compile Include="LifetimeManager\AbstractDictStackLifetimeManager.cs" />
     <Compile Include="LifetimeManager\AbstractLifetimeManager.cs" />
     <Compile Include="LifetimeManager\CallContextLifetimeManager.cs" />
@@ -117,6 +132,7 @@
     <Compile Include="Json\IJsonSerializer.cs" />
     <Compile Include="Domain\Impl\DefaultSnapshotTypeProvider.cs" />
     <Compile Include="Utils\MethodInvoker.cs" />
+    <Compile Include="Utils\SqlMapper.cs" />
     <Compile Include="Utils\UniqueIdGenerator.cs" />
     <Compile Include="Utils\TypeUtils.cs" />
     <Compile Include="Logger\ILogger.cs" />
@@ -141,11 +157,14 @@
     <Compile Include="ConfigurationSectionHandler.cs" />
     <Compile Include="Utils\Extensions.cs" />
     <Compile Include="Utils\ObjectHelper.cs" />
+    <Compile Include="DbConnectionFactory\IDbConnectionFactory.cs" />
+    <Compile Include="DbConnectionFactory\SqlConnectionFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="log4net">
       <HintPath>..\..\packages\log4net.1.2.10\lib\2.0\log4net.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Newtonsoft.Json.4.5.10\lib\net40\Newtonsoft.Json.dll</HintPath>

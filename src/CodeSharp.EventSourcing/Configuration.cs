@@ -39,6 +39,19 @@ namespace CodeSharp.EventSourcing
         }
 
         /// <summary>
+        /// 采用所有默认方式配置EventSourcing框架
+        /// </summary>
+        /// <param name="appName">应用名称</param>
+        /// <param name="configAssembly">配置文件资源所在程序集</param>
+        /// <param name="assemblies">其他相关的程序集</param>
+        /// <returns></returns>
+        public static Configuration Config(string appName, Assembly configAssembly, params Assembly[] assemblies)
+        {
+            return Configuration.Create(appName)
+                .Initialize(new DefaultConfigurationInitializer(configAssembly))
+                .Container(new TinyIoCObjectContainer(), assemblies);
+        }
+        /// <summary>
         /// 创建一个配置类实例，不能重复调用该方法进行创建
         /// </summary>
         /// <param name="appName">应用名称</param>
@@ -76,9 +89,9 @@ namespace CodeSharp.EventSourcing
             return this;
         }
         /// <summary>
-        /// 设置对象容器实现类
+        /// 设置对象容器并自动注册框架所有默认实现类并自动对给定程序集进行初始化
         /// </summary>
-        public Configuration Container<T>(T container) where T : class, IObjectContainer
+        public Configuration Container(IObjectContainer container, params Assembly[] assemblies)
         {
             ObjectContainer.SetContainer(container);
 
@@ -91,7 +104,7 @@ namespace CodeSharp.EventSourcing
             ObjectContainer.Register<ISnapshotter, DefaultSnapshotter>(LifeStyle.Transient);
             ObjectContainer.Register<ISnapshotPolicy, NoSnapshotPolicy>(LifeStyle.Transient);
             ObjectContainer.Register<IMessageSerializer, JsonMessageSerializer>(LifeStyle.Transient);
-            ObjectContainer.Register<ISubscriptionStorage, InMemorySubscriptionStorage>();
+            ObjectContainer.Register<ISubscriptionStorage, DefaultSubscriptionStorage>();
             ObjectContainer.Register<IMessageTransport, MsmqMessageTransport>(LifeStyle.Transient);
             ObjectContainer.Register<IContextLifetimeManager, DynamicContextLifetimeManager>();
             ObjectContainer.Register<IContextManager, DefaultContextManager>(LifeStyle.Transient);
@@ -102,10 +115,32 @@ namespace CodeSharp.EventSourcing
             ObjectContainer.Register<IAggregateRootInternalHandlerProvider, DefaultAggregateRootInternalHandlerProvider>();
             ObjectContainer.Register<ITypeNameMappingProvider, DefaultTypeNameMappingProvider>();
             ObjectContainer.Register<IEventTypeProvider, DefaultEventTypeProvider>();
-            ObjectContainer.Register<IEventStore, EmptyEventStore>(LifeStyle.Transient);
+            ObjectContainer.Register<IEventStore, DefaultEventStore>(LifeStyle.Transient);
             ObjectContainer.Register<ISnapshotStore, EmptySnapshotStore>(LifeStyle.Transient);
-            ObjectContainer.Register<IEventPublisher, DefaultEventPublisher>();
+            ObjectContainer.Register<ISyncEventPublisher, DefaultSyncEventPublisher>();
+            ObjectContainer.Register<IAsyncEventPublisher, DefaultAsyncEventPublisher>();
             ObjectContainer.Register<IEventSubscriberEndpoint, DefaultEventSubscriberEndpoint>();
+            ObjectContainer.Register<IDbConnectionFactory, SqlConnectionFactory>(LifeStyle.Transient);
+            ObjectContainer.Register<IAggregateRootVersionTableProvider, DefaultAggregateRootVersionTableProvider>();
+            ObjectContainer.Register<ISourcableEventTableProvider, DefaultSourcableEventTableProvider>();
+            ObjectContainer.Register<IContextTransactionLifetimeManager, DynamicContextTransactionLifetimeManager>();
+            ObjectContainer.Register<IContextTransactionManager, SqlContextTransactionManager>(LifeStyle.Transient);
+            ObjectContainer.Register<ICurrentDbTransactionProvider, SqlContextTransactionManager>(LifeStyle.Transient);
+
+            //对给定程序集进行初始化
+            this
+            .RegisterServices(assemblies)
+            .RegisterComponents(assemblies)
+            .RegisterRepositories(assemblies)
+            .RegisterAggregateRootTypes(assemblies)
+            .RegisterSourcableEvents(assemblies)
+            .RegisterSourcableEventMappings(assemblies)
+            .RegisterEventSubscribers(assemblies)
+            .RegisterTypeNameMappings(assemblies)
+            .RegisterAggregateRootInternalEventHandlers(assemblies)
+            .RegisterSyncEventHandlers(assemblies)
+            .RegisterAsyncEventHandlers(assemblies)
+            .RegisterAggregateEventHandlers(assemblies);
 
             return this;
         }
@@ -278,11 +313,19 @@ namespace CodeSharp.EventSourcing
             return this;
         }
         /// <summary>
-        /// 注册EventPublisher实现类
+        /// 注册同步的EventPublisher实现类
         /// </summary>
-        public Configuration EventPublisher<T>() where T : class, IEventPublisher
+        public Configuration SyncEventPublisher<T>() where T : class, ISyncEventPublisher
         {
-            ObjectContainer.RegisterDefault<IEventPublisher, T>();
+            ObjectContainer.RegisterDefault<ISyncEventPublisher, T>();
+            return this;
+        }
+        /// <summary>
+        /// 注册异步的EventPublisher实现类
+        /// </summary>
+        public Configuration AsyncEventPublisher<T>() where T : class, IAsyncEventPublisher
+        {
+            ObjectContainer.RegisterDefault<IAsyncEventPublisher, T>();
             return this;
         }
         /// <summary>
@@ -291,6 +334,46 @@ namespace CodeSharp.EventSourcing
         public Configuration EventSubscriberEndpoint<T>() where T : class, IEventSubscriberEndpoint
         {
             ObjectContainer.RegisterDefault<IEventSubscriberEndpoint, T>();
+            return this;
+        }
+        /// <summary>
+        /// 注册数据库连接工厂实现类
+        /// </summary>
+        public Configuration DbConnectionFactory<T>() where T : class, IDbConnectionFactory
+        {
+            ObjectContainer.RegisterDefault<IDbConnectionFactory, T>();
+            return this;
+        }
+        /// <summary>
+        /// 注册聚合根的可溯源事件的表名提供者
+        /// </summary>
+        public Configuration SourcableEventTableProvider<T>() where T : class, ISourcableEventTableProvider
+        {
+            ObjectContainer.RegisterDefault<ISourcableEventTableProvider, T>();
+            return this;
+        }
+        /// <summary>
+        /// 注册聚合根的可溯源事件版本信息的表名提供者
+        /// </summary>
+        public Configuration AggregateRootVersionTableProvider<T>() where T : class, IAggregateRootVersionTableProvider
+        {
+            ObjectContainer.RegisterDefault<IAggregateRootVersionTableProvider, T>();
+            return this;
+        }
+        /// <summary>
+        /// 注册Context事务管理器实现类
+        /// </summary>
+        public Configuration ContextTransactionManager<T>() where T : class, IContextTransactionManager
+        {
+            ObjectContainer.RegisterDefault<IContextTransactionManager, T>();
+            return this;
+        }
+        /// <summary>
+        /// 注册数据库事务管理器实现类
+        /// </summary>
+        public Configuration DbTransactionManager<T>() where T : class, ICurrentDbTransactionProvider
+        {
+            ObjectContainer.RegisterDefault<ICurrentDbTransactionProvider, T>();
             return this;
         }
 
@@ -396,7 +479,7 @@ namespace CodeSharp.EventSourcing
         /// <summary>
         /// 启动事件订阅者端点
         /// </summary>
-        public Configuration StartEventSubscriberEndpoint(string endpointAddress = null, bool clearSubscriptions = false)
+        public Configuration StartEventSubscriberEndpoint(string endpointAddress = null, bool clearSubscriptions = true)
         {
             var endpoint = ObjectContainer.Resolve<IEventSubscriberEndpoint>();
             endpoint.Initialize(endpointAddress ?? Configuration.Instance.AppName, clearSubscriptions);

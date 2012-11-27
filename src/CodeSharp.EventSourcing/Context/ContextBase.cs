@@ -11,11 +11,13 @@ namespace CodeSharp.EventSourcing
     {
         protected const int MaxTryCount = 100;
         protected List<AggregateRoot> _trackingAggregateRoots;
-        protected IEventPublisher _eventPublisher;
+        protected ISyncEventPublisher _syncEventPublisher;
+        protected IAsyncEventPublisher _asyncEventPublisher;
         protected IAggregateRootFactory _aggregateRootFactory;
         protected IAggregateEventHandlerProvider _aggregateEventHandlerProvider;
         protected IEventStore _eventStore;
         protected ISnapshotStore _snapshotStore;
+        protected IContextTransactionManager _transactionManager;
         protected ILogger _logger;
 
         public abstract bool IsChildContext { get; }
@@ -24,11 +26,13 @@ namespace CodeSharp.EventSourcing
         public ContextBase()
         {
             _trackingAggregateRoots = new List<AggregateRoot>();
-            _eventPublisher = ObjectContainer.Resolve<IEventPublisher>();
+            _syncEventPublisher = ObjectContainer.Resolve<ISyncEventPublisher>();
+            _asyncEventPublisher = ObjectContainer.Resolve<IAsyncEventPublisher>();
             _aggregateRootFactory = ObjectContainer.Resolve<IAggregateRootFactory>();
             _aggregateEventHandlerProvider = ObjectContainer.Resolve<IAggregateEventHandlerProvider>();
             _eventStore = ObjectContainer.Resolve<IEventStore>();
             _snapshotStore = ObjectContainer.Resolve<ISnapshotStore>();
+            _transactionManager = ObjectContainer.Resolve<IContextTransactionManager>();
             _logger = ObjectContainer.Resolve<ILoggerFactory>().Create(string.Format("EventSourcing.{0}", GetType().Name));
         }
 
@@ -78,18 +82,46 @@ namespace CodeSharp.EventSourcing
         }
         public virtual void SaveChanges()
         {
-            PublishNotifyEvents();
+            IEnumerable<object> evnts = null;
 
-            var sourcableEvents = FetchSourcableEvents();
-            if (sourcableEvents.Count() > 0)
+            using (var transaction = _transactionManager.OpenContextTransaction())
             {
-                var totalSourcableEvents = PublishSourcableEventsToDomain(sourcableEvents);
-                PersistSourcableEvents(totalSourcableEvents);
-                PublishSourcableEventsToExternal(totalSourcableEvents);
+                try
+                {
+                    var sourcableEvents = FetchSourcableEvents();
+                    if (sourcableEvents.Count() > 0)
+                    {
+                        var totalSourcableEvents = PublishSourcableEventsToDomain(sourcableEvents);
+                        _eventStore.StoreEvents(totalSourcableEvents);
+                        evnts = totalSourcableEvents.Select(evnt => evnt.RawEvent);
+                        _syncEventPublisher.PublishEvents(evnts);
+                    }
+
+                    var notifyEvents = FetchNotifyEvents();
+                    if (notifyEvents.Count() > 0)
+                    {
+                        _syncEventPublisher.PublishEvents(notifyEvents);
+                    }
+
+                    transaction.Commit();
+                }
+                catch (ConcurrencyException ex)
+                {
+                    transaction.Rollback();
+                    _logger.Error(ex);
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    transaction.Rollback();
+                    _logger.Error("Unknown error when saving context changes.", ex);
+                    throw;
+                }
             }
-            else
+
+            if (evnts != null && evnts.Count() > 0)
             {
-                _logger.Info("No sourcable event exist.");
+                _asyncEventPublisher.PublishEvents(evnts);
             }
         }
         public virtual void Dispose()
@@ -98,42 +130,6 @@ namespace CodeSharp.EventSourcing
 
         #region Private Methods
 
-        /// <summary>
-        /// 通过EventPublisher发布领域中的通知事件
-        /// </summary>
-        private void PublishNotifyEvents()
-        {
-            _logger.Debug("Publishing notify events.");
-            var notifyEvents = FetchNotifyEvents();
-            if (notifyEvents.Count() > 0)
-            {
-                _eventPublisher.PublishEvents(notifyEvents);
-            }
-            else
-            {
-                _logger.Debug("No notify event exist.");
-            }
-            _logger.Debug("Published notify events.");
-        }
-        /// <summary>
-        /// 持久化可溯源事件
-        /// </summary>
-        private void PersistSourcableEvents(IEnumerable<SourcableEvent> evnts)
-        {
-            _logger.Info("Persisting sourcable events.");
-            _eventStore.StoreEvents(evnts);
-            _logger.Info("Persisted sourcable events.");
-        }
-        /// <summary>
-        /// 以事务的方式通过EventPublisher将指定的可溯源事件发布到外部，领域外部的事件订阅者如Denormalizers会响应这些事件。
-        /// </summary>
-        /// <param name="sourcableEvents"></param>
-        private void PublishSourcableEventsToExternal(IEnumerable<SourcableEvent> sourcableEvents)
-        {
-            _logger.Debug("Publishing sourcable events to external.");
-            _eventPublisher.PublishEvents(sourcableEvents.Select(evnt => evnt.RawEvent));
-            _logger.Debug("Published sourcable events to external.");
-        }
         /// <summary>
         /// 从存储设备中查找一个聚合根
         /// </summary>

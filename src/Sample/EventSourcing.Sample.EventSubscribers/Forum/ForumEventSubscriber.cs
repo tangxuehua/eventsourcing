@@ -1,25 +1,23 @@
 ﻿using CodeSharp.EventSourcing;
-using CodeSharp.EventSourcing.NHibernate;
-using EventSourcing.Sample.Entities;
 using EventSourcing.Sample.Model.Forum;
 
 namespace EventSourcing.Sample.EventSubscribers
 {
     public class ForumEventSubscriber
     {
-        private ISessionHelper _sessionHelper;
+        private IDbConnectionFactory _connectionFactory;
 
-        public ForumEventSubscriber(ISessionHelper sessionHelper)
+        public ForumEventSubscriber(IDbConnectionFactory connectionFactory)
         {
-            _sessionHelper = sessionHelper;
+            _connectionFactory = connectionFactory;
         }
 
         [AsyncEventHandler]
         private void Handle(ForumCreated evnt)
         {
-            _sessionHelper.ExecuteAction((session) =>
+            using (var conn = _connectionFactory.OpenConnection())
             {
-                var forum = new ForumEntity
+                conn.Insert(new
                 {
                     Id = evnt.Id,
                     Name = evnt.Name,
@@ -27,22 +25,24 @@ namespace EventSourcing.Sample.EventSubscribers
                     TotalPost = evnt.State.TotalPost,
                     LatestThreadId = evnt.State.LatestThreadId,
                     LatestPostAuthorId = evnt.State.LatestPostAuthorId
-                };
-                session.Save(forum);
-            });
+                }, "EventSourcing_Sample_Forum");
+            }
         }
         [AsyncEventHandler]
         private void Handle(ForumStateChanged evnt)
         {
-            _sessionHelper.ExecuteAction((session) =>
+            using (var conn = _connectionFactory.OpenConnection())
             {
-                var forum = session.Get<ForumEntity>(evnt.Id);
-                forum.TotalThread = evnt.State.TotalThread;
-                forum.TotalPost = evnt.State.TotalPost;
-                forum.LatestThreadId = evnt.State.LatestThreadId;
-                forum.LatestPostAuthorId = evnt.State.LatestPostAuthorId;
-                session.Update(forum);
-            });
+                conn.Update(new
+                {
+                    TotalThread = evnt.State.TotalThread,
+                    TotalPost = evnt.State.TotalPost,
+                    LatestThreadId = evnt.State.LatestThreadId,
+                    LatestPostAuthorId = evnt.State.LatestPostAuthorId
+                },
+                new { Id = evnt.Id },
+                "EventSourcing_Sample_Forum");
+            }
         }
     }
 }

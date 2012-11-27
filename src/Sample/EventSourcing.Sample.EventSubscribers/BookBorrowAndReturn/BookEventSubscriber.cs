@@ -1,35 +1,33 @@
 ﻿using CodeSharp.EventSourcing;
-using CodeSharp.EventSourcing.NHibernate;
-using EventSourcing.Sample.Entities;
 using EventSourcing.Sample.Model.BookBorrowAndReturn;
 
 namespace EventSourcing.Sample.EventSubscribers
 {
     public class BookEventSubscriber
     {
-        private ISessionHelper _sessionHelper;
+        private IDbConnectionFactory _connectionFactory;
 
-        public BookEventSubscriber(ISessionHelper sessionHelper)
+        public BookEventSubscriber(IDbConnectionFactory connectionFactory)
         {
-            _sessionHelper = sessionHelper;
+            _connectionFactory = connectionFactory;
         }
 
         [AsyncEventHandler]
         private void Handle(BookCreated evnt)
         {
-            _sessionHelper.ExecuteAction((session) =>
+            using (var conn = _connectionFactory.OpenConnection())
             {
-                var book = new BookEntity
-                {
-                    Id = evnt.Id,
-                    Name = evnt.BookInfo.Name,
-                    Description = evnt.BookInfo.Description,
-                    Author = evnt.BookInfo.Author,
-                    ISBN = evnt.BookInfo.ISBN,
-                    Publisher = evnt.BookInfo.Publisher
-                };
-                session.Save(book);
-            });
+                conn.Insert(
+                    new
+                    {
+                        Id = evnt.Id,
+                        Name = evnt.BookInfo.Name,
+                        Description = evnt.BookInfo.Description,
+                        Author = evnt.BookInfo.Author,
+                        ISBN = evnt.BookInfo.ISBN,
+                        Publisher = evnt.BookInfo.Publisher
+                    }, "EventSourcing_Sample_Book");
+            }
         }
     }
 }
