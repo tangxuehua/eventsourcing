@@ -52,19 +52,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DapperQueryService.cs" />
     <Compile Include="EventSourcingConfigurationExtensions.cs" />
-    <Compile Include="EventStore\AggregateRootVersion.cs" />
-    <Compile Include="EventStore\AggregateRootVersionMap.cs" />
-    <Compile Include="EventStore\NHibernateEventStore.cs" />
-    <Compile Include="EventStore\NHibernateSnapshotStore.cs" />
-    <Compile Include="EventStore\SnapshotMap.cs" />
-    <Compile Include="EventStore\SourcableEventMap.cs" />
+    <Compile Include="Entities\AggregateRootVersion.cs" />
+    <Compile Include="Mappings\AggregateRootVersionMap.cs" />
+    <Compile Include="NHibernateEventStore.cs" />
+    <Compile Include="NHibernateSnapshotStore.cs" />
+    <Compile Include="Mappings\SnapshotMap.cs" />
+    <Compile Include="Mappings\SourcableEventMap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SessionHelper.cs" />
-    <Compile Include="SubscriptionStorage\NHibernateSubscriptionStorage.cs" />
-    <Compile Include="SubscriptionStorage\Subscription.cs" />
-    <Compile Include="SubscriptionStorage\SubscriptionMapping.cs" />
+    <Compile Include="NHibernateSubscriptionStorage.cs" />
+    <Compile Include="Entities\Subscription.cs" />
+    <Compile Include="Mappings\SubscriptionMapping.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\CodeSharp.EventSourcing\CodeSharp.EventSourcing.csproj">
@@ -74,9 +73,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="TableGenerateSQL.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

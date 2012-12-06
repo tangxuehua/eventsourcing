@@ -14,7 +14,7 @@ namespace EventSourcing.Sample.Test
         {
             var productService = ObjectContainer.Resolve<IProductService>();
             var orderService = ObjectContainer.Resolve<IOrderService>();
-            var sessionManager = ObjectContainer.Resolve<IContextManager>();
+            var contextManager = ObjectContainer.Resolve<IContextManager>();
 
             //创建商品
             var product1 = productService.Create(RandomString(), RandomString(), 10);
@@ -31,9 +31,9 @@ namespace EventSourcing.Sample.Test
             orderService.RemoveOrderItem(order.Id, product3.Id);
 
             //重新获取订单
-            using (var session = sessionManager.GetContext())
+            using (var context = contextManager.GetContext())
             {
-                order = session.Load<Order>(order.Id);
+                order = context.Load<Order>(order.Id);
             }
             //Assert结果
             Assert.AreEqual(2, order.Items.Count());
