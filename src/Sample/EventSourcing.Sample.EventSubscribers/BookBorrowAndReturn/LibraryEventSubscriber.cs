@@ -1,69 +1,57 @@
-﻿using CodeSharp.EventSourcing;
+﻿using System.Data;
+using CodeSharp.EventSourcing;
 using EventSourcing.Sample.Model.BookBorrowAndReturn;
 
 namespace EventSourcing.Sample.EventSubscribers
 {
     public class LibraryEventSubscriber
     {
-        private IDbConnectionFactory _connectionFactory;
+        private IDbConnection _connection;
+        private IDbTransaction _transaction;
 
-        public LibraryEventSubscriber(IDbConnectionFactory connectionFactory)
+        public LibraryEventSubscriber(ICurrentDbTransactionProvider transactionProvider)
         {
-            _connectionFactory = connectionFactory;
+            _transaction = transactionProvider.CurrentTransaction;
+            _connection = _transaction.Connection;
         }
 
-        [AsyncEventHandler]
+        [SyncEventHandler]
         private void Handle(LibraryCreated evnt)
         {
-            using (var conn = _connectionFactory.OpenConnection())
-            {
-                conn.Insert(evnt, "EventSourcing_Sample_Library");
-            }
+            _connection.Insert(evnt, "EventSourcing_Sample_Library", _transaction);
         }
-        [AsyncEventHandler]
+        [SyncEventHandler]
         private void Handle(NewBookStored evnt)
         {
-            using (var conn = _connectionFactory.OpenConnection())
-            {
-                conn.Insert(evnt, "EventSourcing_Sample_BookStoreItem");
-            }
+            _connection.Insert(evnt, "EventSourcing_Sample_BookStoreItem", _transaction);
         }
-        [AsyncEventHandler]
+        [SyncEventHandler]
         private void Handle(BookCountUpdated evnt)
         {
-            using (var conn = _connectionFactory.OpenConnection())
-            {
-                conn.Update(
+            _connection.Update(
                     new { Count = evnt.Count },
                     new { LibraryId = evnt.LibraryId, BookId = evnt.BookId },
-                    "EventSourcing_Sample_BookStoreItem");
-            }
+                    "EventSourcing_Sample_BookStoreItem", _transaction);
         }
-        [AsyncEventHandler]
+        [SyncEventHandler]
         private void Handle(BookLent evnt)
         {
-            using (var conn = _connectionFactory.OpenConnection())
-            {
-                var key = new { LibraryId = evnt.LibraryId, BookId = evnt.BookId };
-                var count = conn.GetValue<int>(key, "EventSourcing_Sample_BookStoreItem", "Count");
-                conn.Update(
-                    new { Count = count - evnt.Count },
-                    key,
-                    "EventSourcing_Sample_BookStoreItem");
-            }
+            var key = new { LibraryId = evnt.LibraryId, BookId = evnt.BookId };
+            var count = _connection.GetValue<int>(key, "EventSourcing_Sample_BookStoreItem", "Count", _transaction);
+            _connection.Update(
+                new { Count = count - evnt.Count },
+                key,
+                "EventSourcing_Sample_BookStoreItem", _transaction);
         }
-        [AsyncEventHandler]
+        [SyncEventHandler]
         private void Handle(BookReceived evnt)
         {
-            using (var conn = _connectionFactory.OpenConnection())
-            {
-                var key = new { LibraryId = evnt.LibraryId, BookId = evnt.BookId };
-                var count = conn.GetValue<int>(key, "EventSourcing_Sample_BookStoreItem", "Count");
-                conn.Update(
-                    new { Count = count + evnt.Count },
-                    key,
-                    "EventSourcing_Sample_BookStoreItem");
-            }
+            var key = new { LibraryId = evnt.LibraryId, BookId = evnt.BookId };
+            var count = _connection.GetValue<int>(key, "EventSourcing_Sample_BookStoreItem", "Count", _transaction);
+            _connection.Update(
+                new { Count = count + evnt.Count },
+                key,
+                "EventSourcing_Sample_BookStoreItem", _transaction);
         }
     }
 }

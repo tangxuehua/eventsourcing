@@ -17,7 +17,7 @@ namespace CodeSharp.EventSourcing.EventStore.NHibernate
     {
         #region Private Variables
 
-        private IJsonSerializer _jsonSerializer;
+        private ISerializer _serializer;
         private ITypeNameMappingProvider _typeNameMappingProvider;
         private ISourcableEventTypeProvider _sourcableEventTypeProvider;
         private ISessionFactory _sessionFactory;
@@ -28,13 +28,13 @@ namespace CodeSharp.EventSourcing.EventStore.NHibernate
         #region Constructors
 
         public NHibernateEventStore(
-            IJsonSerializer jsonSerializer,
+            ISerializer serializer,
             ITypeNameMappingProvider typeNameMappingProvider,
             ISourcableEventTypeProvider sourcableEventTypeProvider,
             ISessionFactory sessionFactory,
             ILoggerFactory loggerFactory)
         {
-            _jsonSerializer = jsonSerializer;
+            _serializer = serializer;
             _typeNameMappingProvider = typeNameMappingProvider;
             _sourcableEventTypeProvider = sourcableEventTypeProvider;
             _sessionFactory = sessionFactory;
@@ -188,11 +188,11 @@ namespace CodeSharp.EventSourcing.EventStore.NHibernate
         }
         private string SerializeEvent(object evnt)
         {
-            return _jsonSerializer.Serialize(evnt);
+            return _serializer.Serialize(evnt);
         }
         private object DeserializeEvent(Type eventType, string eventJson)
         {
-            return _jsonSerializer.Deserialize(eventJson, eventType);
+            return _serializer.Deserialize(eventJson, eventType);
         }
 
         #endregion

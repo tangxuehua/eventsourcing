@@ -2,7 +2,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Threading;
 
 namespace CodeSharp.EventSourcing
 {
@@ -12,12 +12,17 @@ namespace CodeSharp.EventSourcing
     public class DefaultSubscriptionStorage : ISubscriptionStorage
     {
         private IDbConnectionFactory _connectionFactory;
+        private InMemorySubscriptionStorage _storage;
+        private Timer _refreshSubscriptionTimer;
         private ILogger _logger;
+        private const int RefreshPeriod = 30 * 1000; //默认30秒刷新一次订阅者信息
 
         public DefaultSubscriptionStorage(IDbConnectionFactory connectionFactory, ILoggerFactory loggerFactory)
         {
             _connectionFactory = connectionFactory;
             _logger = loggerFactory.Create("EventSourcing.DefaultSubscriptionStorage");
+            _storage = new InMemorySubscriptionStorage();
+            _refreshSubscriptionTimer = new Timer((x) => RefreshSubscriptions(), null, 0, RefreshPeriod);
         }
 
         public void Subscribe(Address address, Type messageType)
@@ -34,6 +39,7 @@ namespace CodeSharp.EventSourcing
                     _logger.DebugFormat("Subscriber '{0}' subscribes message '{1}'.", subscriberAddress, messageTypeName);
                 }
             }
+            _storage.Subscribe(address, messageType);
         }
         public void ClearAddressSubscriptions(Address address)
         {
@@ -44,6 +50,7 @@ namespace CodeSharp.EventSourcing
                 connection.Delete(new { SubscriberAddress = subscriberAddress }, table);
                 _logger.DebugFormat("Cleaned up subscriptions of subscriber address '{0}'", subscriberAddress);
             }
+            _storage.ClearAddressSubscriptions(address);
         }
         public void Unsubscribe(Address address, Type messageType)
         {
@@ -55,15 +62,29 @@ namespace CodeSharp.EventSourcing
                 connection.Delete(new { SubscriberAddress = subscriberAddress, MessageType = messageTypeName }, table);
                 _logger.DebugFormat("Subscriber '{0}' unsubscribes message '{1}'.", subscriberAddress, messageTypeName);
             }
+            _storage.Unsubscribe(address, messageType);
         }
         public IEnumerable<Address> GetSubscriberAddressesForMessage(Type messageType)
         {
+            return _storage.GetSubscriberAddressesForMessage(messageType);
+        }
+
+        private void RefreshSubscriptions()
+        {
             using (var connection = _connectionFactory.OpenConnection())
             {
-                var messageTypeName = messageType.AssemblyQualifiedName;
                 var table = Configuration.Instance.Properties["subscriptionTable"];
-                var subscriptions = connection.Query(new { MessageType = messageTypeName }, table);
-                return subscriptions.Select(x => Address.Parse(x.SubscriberAddress as string));
+                var subscriptions = connection.QueryAll(table);
+                var storage = new InMemorySubscriptionStorage();
+
+                foreach (var subscription in subscriptions)
+                {
+                    var address = Address.Parse(subscription.SubscriberAddress as string);
+                    var messageType = Type.GetType(subscription.MessageType as string);
+                    storage.Subscribe(address, messageType);
+                }
+
+                _storage = storage;
             }
         }
     }

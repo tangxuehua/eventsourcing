@@ -10,9 +10,9 @@ using Newtonsoft.Json.Serialization;
 namespace CodeSharp.EventSourcing
 {
     /// <summary>
-    /// 基于Json.Net实现的IJsonSerializer
+    /// 基于Json.Net实现的ISerializer
     /// </summary>
-    public class JsonNetSerializer : IJsonSerializer
+    public class JsonNetSerializer : ISerializer
     {
         private JsonSerializerSettings _settings = new JsonSerializerSettings { ContractResolver = new SisoJsonDefaultContractResolver() };
 
@@ -28,7 +28,7 @@ namespace CodeSharp.EventSourcing
         {
             return JsonConvert.DeserializeObject(value, objectType, _settings);
         }
-        public T Deserialize<T>(string value)
+        public T Deserialize<T>(string value) where T : class
         {
             return JsonConvert.DeserializeObject<T>(JObject.Parse(value).ToString(), _settings);
         }

@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 
 namespace CodeSharp.EventSourcing
 {
@@ -10,7 +11,7 @@ namespace CodeSharp.EventSourcing
     /// </summary>
     public class InMemorySubscriptionStorage : ISubscriptionStorage
     {
-        private readonly Dictionary<Type, List<Address>> _storage = new Dictionary<Type, List<Address>>();
+        private readonly ConcurrentDictionary<Type, List<Address>> _storage = new ConcurrentDictionary<Type, List<Address>>();
 
         public void Subscribe(Address address, Type messageType)
         {
@@ -52,6 +53,9 @@ namespace CodeSharp.EventSourcing
                 return _storage[messageType];
             }
             return new List<Address>();
+        }
+        public void RefreshSubscriptions()
+        {
         }
     }
 }

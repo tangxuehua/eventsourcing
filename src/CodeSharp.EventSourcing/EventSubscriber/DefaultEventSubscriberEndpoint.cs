@@ -44,7 +44,7 @@ namespace CodeSharp.EventSourcing
 
         #endregion
 
-        public void Initialize(string address, bool clearSubscriptions = false)
+        public void Initialize(string address, bool clearSubscriptions)
         {
             var endpointAddress = Address.Parse(address);
             _messageTransport.Init(endpointAddress);

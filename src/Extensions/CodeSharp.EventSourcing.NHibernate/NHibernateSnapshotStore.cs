@@ -14,7 +14,7 @@ namespace CodeSharp.EventSourcing.EventStore.NHibernate
     {
         #region Private Variables
 
-        private IJsonSerializer _jsonSerializer;
+        private ISerializer _serializer;
         private ITypeNameMappingProvider _typeNameMappingProvider;
         private ISnapshotTypeProvider _snapshotTypeProvider;
         private ISessionFactory _sessionFactory;
@@ -26,13 +26,13 @@ namespace CodeSharp.EventSourcing.EventStore.NHibernate
 
         public NHibernateSnapshotStore(
             ISessionFactory sessionFactory,
-            IJsonSerializer snapshotSerializer,
-            ITypeNameMappingProvider typeNameMapper,
+            ISerializer serializer,
+            ITypeNameMappingProvider typeNameMappingProvider,
             ISnapshotTypeProvider snapshotTypeProvider,
             ILoggerFactory loggerFactory)
         {
-            _jsonSerializer = snapshotSerializer;
-            _typeNameMappingProvider = typeNameMapper;
+            _serializer = serializer;
+            _typeNameMappingProvider = typeNameMappingProvider;
             _snapshotTypeProvider = snapshotTypeProvider;
             _sessionFactory = sessionFactory;
             _logger = loggerFactory.Create("EventSourcing.EventStore.NHibernateSnapshotStore");
@@ -111,11 +111,11 @@ namespace CodeSharp.EventSourcing.EventStore.NHibernate
         }
         private string SerializeSnapshotData(object snapshotData)
         {
-            return _jsonSerializer.Serialize(snapshotData);
+            return _serializer.Serialize(snapshotData);
         }
         private object DeserializeSnapshotData(Type snapshotDataType, string snapshotSerializedData)
         {
-            return _jsonSerializer.Deserialize(snapshotSerializedData, snapshotDataType);
+            return _serializer.Deserialize(snapshotSerializedData, snapshotDataType);
         }
 
         #endregion

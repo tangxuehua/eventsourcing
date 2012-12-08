@@ -86,5 +86,9 @@ namespace CodeSharp.EventSourcing.SubscriptionStorage.NHibernate
                 return criteria.List<Subscription>().Select(x => Address.Parse(x.SubscriberAddress));
             }
         }
+
+        public void RefreshSubscriptions()
+        {
+        }
     }
 }

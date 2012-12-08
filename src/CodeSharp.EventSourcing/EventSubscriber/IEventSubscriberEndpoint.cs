@@ -14,7 +14,7 @@ namespace CodeSharp.EventSourcing
         /// </summary>
         /// <param name="address"></param>
         /// <param name="clearSubscriptions"></param>
-        void Initialize(string address, bool clearSubscriptions = false);
+        void Initialize(string address, bool clearSubscriptions);
         /// <summary>
         /// 启动当前事件订阅者端点，开始接收当前端点的地址对应队列的消息
         /// </summary>

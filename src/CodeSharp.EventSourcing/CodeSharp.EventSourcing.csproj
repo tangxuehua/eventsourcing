@@ -105,7 +105,7 @@
     <Compile Include="EventPublisher\AsyncEventPublisher\Impl\DefaultAsyncEventPublisher.cs" />
     <Compile Include="EventPublisher\AsyncEventPublisher\Address.cs" />
     <Compile Include="EventPublisher\AsyncEventPublisher\Impl\BinaryMessageSerializer.cs" />
-    <Compile Include="EventPublisher\AsyncEventPublisher\Impl\JsonMessageSerializer.cs" />
+    <Compile Include="EventPublisher\AsyncEventPublisher\Impl\DefaultMessageSerializer.cs" />
     <Compile Include="EventPublisher\AsyncEventPublisher\Message.cs" />
     <Compile Include="EventSourcingException.cs" />
     <Compile Include="Storage\Impl\InMemorySubscriptionStorage.cs" />
@@ -129,7 +129,7 @@
     <Compile Include="Configuration.cs" />
     <Compile Include="Domain\AggregateRoot.cs" />
     <Compile Include="Domain\SourcableEvent.cs" />
-    <Compile Include="Json\IJsonSerializer.cs" />
+    <Compile Include="Json\ISerializer.cs" />
     <Compile Include="Domain\Impl\DefaultSnapshotTypeProvider.cs" />
     <Compile Include="Utils\MethodInvoker.cs" />
     <Compile Include="Utils\SqlMapper.cs" />

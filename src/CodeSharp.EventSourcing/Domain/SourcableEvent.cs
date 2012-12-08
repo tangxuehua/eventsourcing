@@ -48,7 +48,7 @@ namespace CodeSharp.EventSourcing
         /// </summary>
         public object RawEvent { get; set; }
         /// <summary>
-        /// 用户定义的事件对象的字符串形式，默认是json格式
+        /// 用户定义的事件对象的字符串形式
         /// </summary>
         public string Data { get; set; }
         /// <summary>
@@ -133,7 +133,7 @@ namespace CodeSharp.EventSourcing
             }
         }
         /// <summary>
-        /// 用户定义的事件对象的字符串形式，默认是json格式
+        /// 用户定义的事件对象的字符串形式
         /// </summary>
         public new string Data
         {

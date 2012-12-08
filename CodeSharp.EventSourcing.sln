@@ -30,6 +30,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeSharp.EventSourcing.Con
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeSharp.EventSourcing.Container.StructureMap", "src\Extensions\CodeSharp.EventSourcing.Container.StructureMap\CodeSharp.EventSourcing.Container.StructureMap.csproj", "{5CA1D7A2-D739-4B46-971C-3A205C6C3951}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EventSourcing.Sample.ConsoleApp", "src\Sample\EventSourcing.Sample.ConsoleApp\EventSourcing.Sample.ConsoleApp.csproj", "{ECA04279-0E37-454D-A7B0-C5B3B08A6312}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -140,6 +142,16 @@ Global
 		{5CA1D7A2-D739-4B46-971C-3A205C6C3951}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{5CA1D7A2-D739-4B46-971C-3A205C6C3951}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{5CA1D7A2-D739-4B46-971C-3A205C6C3951}.Release|x86.ActiveCfg = Release|Any CPU
+		{ECA04279-0E37-454D-A7B0-C5B3B08A6312}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{ECA04279-0E37-454D-A7B0-C5B3B08A6312}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
+		{ECA04279-0E37-454D-A7B0-C5B3B08A6312}.Debug|Mixed Platforms.Build.0 = Debug|x86
+		{ECA04279-0E37-454D-A7B0-C5B3B08A6312}.Debug|x86.ActiveCfg = Debug|x86
+		{ECA04279-0E37-454D-A7B0-C5B3B08A6312}.Debug|x86.Build.0 = Debug|x86
+		{ECA04279-0E37-454D-A7B0-C5B3B08A6312}.Release|Any CPU.ActiveCfg = Release|x86
+		{ECA04279-0E37-454D-A7B0-C5B3B08A6312}.Release|Mixed Platforms.ActiveCfg = Release|x86
+		{ECA04279-0E37-454D-A7B0-C5B3B08A6312}.Release|Mixed Platforms.Build.0 = Release|x86
+		{ECA04279-0E37-454D-A7B0-C5B3B08A6312}.Release|x86.ActiveCfg = Release|x86
+		{ECA04279-0E37-454D-A7B0-C5B3B08A6312}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -150,6 +162,7 @@ Global
 		{BC2C4E31-AFFD-433A-815E-A92889E81265} = {CDED0046-AE9A-4238-B973-6F9D9F1B8FD7}
 		{E533D5F2-1E0D-49CD-9ED0-5F9D78CD6287} = {CDED0046-AE9A-4238-B973-6F9D9F1B8FD7}
 		{CD87D9A6-C0F9-4443-A71E-F798E264BEA5} = {CDED0046-AE9A-4238-B973-6F9D9F1B8FD7}
+		{ECA04279-0E37-454D-A7B0-C5B3B08A6312} = {CDED0046-AE9A-4238-B973-6F9D9F1B8FD7}
 		{22ABACD3-1B32-434D-B8F1-6EC34DEF5815} = {27663D2E-053A-4AAD-B68A-F02430D0790E}
 		{986B1FC3-AFDA-4D9D-A340-298DECA2B0FB} = {27663D2E-053A-4AAD-B68A-F02430D0790E}
 		{8A897CA8-A953-48D4-8014-1D30E760DE6F} = {27663D2E-053A-4AAD-B68A-F02430D0790E}

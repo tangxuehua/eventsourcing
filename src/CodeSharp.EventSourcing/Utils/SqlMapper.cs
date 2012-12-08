@@ -3413,6 +3413,17 @@ string name, object value = null, DbType? dbType = null, ParameterDirection? dir
 
             return SqlMapper.Query<T>(connection, sql, obj, transaction, true, commandTimeout).SingleOrDefault();
         }
+        public static IEnumerable<dynamic> QueryAll(this IDbConnection connection, string table, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            var sql = string.Format("select * from [{0}]", table);
+            return SqlMapper.Query(connection, sql, null, transaction, true, commandTimeout);
+        }
+        public static IEnumerable<T> QueryAll<T>(this IDbConnection connection, string table, IDbTransaction transaction = null, int? commandTimeout = null)
+        {
+            var sql = string.Format("select * from [{0}]", table);
+            return SqlMapper.Query<T>(connection, sql, null, transaction, true, commandTimeout);
+        }
+
         public static IEnumerable<dynamic> Query(this IDbConnection connection, dynamic condition, string table, IDbTransaction transaction = null, int? commandTimeout = null)
         {
             var obj = condition as object;

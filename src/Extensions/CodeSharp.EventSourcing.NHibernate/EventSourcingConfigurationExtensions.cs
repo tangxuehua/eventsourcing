@@ -36,7 +36,6 @@ namespace CodeSharp.EventSourcing.NHibernate
                 .BuildNHibernateSessionFactory();
 
             ObjectContainer.Register<ISessionHelper, SessionHelper>(LifeStyle.Transient);
-            ObjectContainer.Register<IDapperQueryService, DapperQueryService>(LifeStyle.Transient);
 
             return configuration;
         }

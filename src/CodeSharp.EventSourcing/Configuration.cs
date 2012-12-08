@@ -100,10 +100,10 @@ namespace CodeSharp.EventSourcing
             ObjectContainer.Register<IAggregateRootTypeProvider, DefaultAggregateRootTypeProvider>();
             ObjectContainer.Register<ISnapshotTypeProvider, DefaultSnapshotTypeProvider>();
             ObjectContainer.Register<IAggregateRootFactory, DefaultAggregateRootFactory>();
-            ObjectContainer.Register<IJsonSerializer, JsonNetSerializer>(LifeStyle.Transient);
+            ObjectContainer.Register<ISerializer, JsonNetSerializer>(LifeStyle.Transient);
             ObjectContainer.Register<ISnapshotter, DefaultSnapshotter>(LifeStyle.Transient);
             ObjectContainer.Register<ISnapshotPolicy, NoSnapshotPolicy>(LifeStyle.Transient);
-            ObjectContainer.Register<IMessageSerializer, JsonMessageSerializer>(LifeStyle.Transient);
+            ObjectContainer.Register<IMessageSerializer, DefaultMessageSerializer>(LifeStyle.Transient);
             ObjectContainer.Register<ISubscriptionStorage, DefaultSubscriptionStorage>();
             ObjectContainer.Register<IMessageTransport, MsmqMessageTransport>(LifeStyle.Transient);
             ObjectContainer.Register<IContextLifetimeManager, DynamicContextLifetimeManager>();
@@ -117,8 +117,8 @@ namespace CodeSharp.EventSourcing
             ObjectContainer.Register<IEventTypeProvider, DefaultEventTypeProvider>();
             ObjectContainer.Register<IEventStore, DefaultEventStore>(LifeStyle.Transient);
             ObjectContainer.Register<ISnapshotStore, EmptySnapshotStore>(LifeStyle.Transient);
-            ObjectContainer.Register<ISyncEventPublisher, DefaultSyncEventPublisher>();
-            ObjectContainer.Register<IAsyncEventPublisher, DefaultAsyncEventPublisher>();
+            ObjectContainer.Register<ISyncEventPublisher, DefaultSyncEventPublisher>(LifeStyle.Transient);
+            ObjectContainer.Register<IAsyncEventPublisher, DefaultAsyncEventPublisher>(LifeStyle.Transient);
             ObjectContainer.Register<IEventSubscriberEndpoint, DefaultEventSubscriberEndpoint>();
             ObjectContainer.Register<IDbConnectionFactory, SqlConnectionFactory>(LifeStyle.Transient);
             ObjectContainer.Register<IAggregateRootVersionTableProvider, DefaultAggregateRootVersionTableProvider>();
@@ -177,11 +177,11 @@ namespace CodeSharp.EventSourcing
             return this;
         }
         /// <summary>
-        /// 注册JSON Serializer实现类
+        /// 注册Serializer实现类
         /// </summary>
-        public Configuration JsonSerializer<T>() where T : class, IJsonSerializer
+        public Configuration JsonSerializer<T>() where T : class, ISerializer
         {
-            ObjectContainer.RegisterDefault<IJsonSerializer, T>(LifeStyle.Transient);
+            ObjectContainer.RegisterDefault<ISerializer, T>(LifeStyle.Transient);
             return this;
         }
         /// <summary>

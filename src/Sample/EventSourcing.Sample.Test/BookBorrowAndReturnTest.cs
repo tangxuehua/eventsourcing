@@ -3,6 +3,8 @@ using CodeSharp.EventSourcing;
 using EventSourcing.Sample.Application;
 using EventSourcing.Sample.Model.BookBorrowAndReturn;
 using NUnit.Framework;
+using System;
+using System.Diagnostics;
 
 namespace EventSourcing.Sample.Test
 {
@@ -12,10 +14,12 @@ namespace EventSourcing.Sample.Test
         [Test]
         public void Test()
         {
+            var start = DateTime.Now;
             var accountService = ObjectContainer.Resolve<ILibraryAccountService>();
             var libraryService = ObjectContainer.Resolve<ILibraryService>();
             var bookService = ObjectContainer.Resolve<IBookService>();
             var contextManager = ObjectContainer.Resolve<IContextManager>();
+            var logger = ObjectContainer.Resolve<ILoggerFactory>().Create("BookBorrowAndReturnTest");
 
             //创建借书账号
             var account = accountService.Create(RandomString(), RandomString());
@@ -65,6 +69,8 @@ namespace EventSourcing.Sample.Test
             Assert.AreEqual(2, account.ActAs<IBorrower>().BorrowedBooks.Count());
             Assert.AreEqual(1, account.ActAs<IBorrower>().BorrowedBooks.Single(x => x.BookId == book1.Id).Count);
             Assert.AreEqual(1, account.ActAs<IBorrower>().BorrowedBooks.Single(x => x.BookId == book3.Id).Count);
+            var end = DateTime.Now;
+            logger.Info((end - start).TotalMilliseconds);
         }
     }
 }

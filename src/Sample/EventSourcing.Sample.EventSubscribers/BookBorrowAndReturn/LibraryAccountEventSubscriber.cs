@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Data;
+using System.Linq;
 using CodeSharp.EventSourcing;
 using EventSourcing.Sample.Model.BookBorrowAndReturn;
 
@@ -6,38 +7,34 @@ namespace EventSourcing.Sample.EventSubscribers
 {
     public class LibraryAccountEventSubscriber
     {
-        private IDbConnectionFactory _connectionFactory;
+        private IDbConnection _connection;
+        private IDbTransaction _transaction;
 
-        public LibraryAccountEventSubscriber(IDbConnectionFactory connectionFactory)
+        public LibraryAccountEventSubscriber(ICurrentDbTransactionProvider transactionProvider)
         {
-            _connectionFactory = connectionFactory;
+            _transaction = transactionProvider.CurrentTransaction;
+            _connection = _transaction.Connection;
         }
 
-        [AsyncEventHandler]
+        [SyncEventHandler]
         private void Handle(AccountCreated evnt)
         {
-            using (var conn = _connectionFactory.OpenConnection())
-            {
-                conn.Insert(evnt, "EventSourcing_Sample_LibraryAccount");
-            }
+            _connection.Insert(evnt, "EventSourcing_Sample_LibraryAccount", _transaction);
         }
-        [AsyncEventHandler]
+        [SyncEventHandler]
         private void Handle(BookBorrowed evnt)
         {
-            using (var conn = _connectionFactory.OpenConnection())
-            {
-                var key = new { LibraryId = evnt.LibraryId, AccountId = evnt.AccountId, BookId = evnt.BookId };
-                var borrowedBooks = conn.Query(key, "EventSourcing_Sample_BorrowedBook");
+            var key = new { LibraryId = evnt.LibraryId, AccountId = evnt.AccountId, BookId = evnt.BookId };
+            var borrowedBooks = _connection.Query(key, "EventSourcing_Sample_BorrowedBook", _transaction);
 
-                if (borrowedBooks.Count() == 0)
-                {
-                    conn.Insert(evnt, "EventSourcing_Sample_BorrowedBook");
-                }
-                else
-                {
-                    var originalCount = (int)borrowedBooks.First().Count;
-                    conn.Update(new { Count = originalCount + evnt.Count }, key, "EventSourcing_Sample_BorrowedBook");
-                }
+            if (borrowedBooks.Count() == 0)
+            {
+                _connection.Insert(evnt, "EventSourcing_Sample_BorrowedBook", _transaction);
+            }
+            else
+            {
+                var originalCount = (int)borrowedBooks.First().Count;
+                _connection.Update(new { Count = originalCount + evnt.Count }, key, "EventSourcing_Sample_BorrowedBook", _transaction);
             }
         }
     }

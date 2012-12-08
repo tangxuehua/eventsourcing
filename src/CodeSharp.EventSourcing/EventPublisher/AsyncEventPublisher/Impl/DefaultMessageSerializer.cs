@@ -11,14 +11,14 @@ namespace CodeSharp.EventSourcing
     /// <summary>
     /// Binary implementation of the message serializer.
     /// </summary>
-    public class JsonMessageSerializer : IMessageSerializer
+    public class DefaultMessageSerializer : IMessageSerializer
     {
-        private IJsonSerializer _jsonSerializer;
+        private ISerializer _serializer;
         private readonly BinaryFormatter _binaryFormatter = new BinaryFormatter();
 
-        public JsonMessageSerializer(IJsonSerializer jsonSerializer)
+        public DefaultMessageSerializer(ISerializer serializer)
         {
-            _jsonSerializer = jsonSerializer;
+            _serializer = serializer;
         }
 
         /// <summary>
@@ -28,8 +28,8 @@ namespace CodeSharp.EventSourcing
         /// <param name="stream"></param>
         public void Serialize(object message, Stream stream)
         {
-            var json = _jsonSerializer.Serialize(message);
-            _binaryFormatter.Serialize(stream, new List<object> { json });
+            var stringValue = _serializer.Serialize(message);
+            _binaryFormatter.Serialize(stream, new List<object> { stringValue });
         }
 
         /// <summary>
@@ -52,8 +52,8 @@ namespace CodeSharp.EventSourcing
                 return null;
             }
 
-            var json = body.First() as string;
-            if (string.IsNullOrEmpty(json))
+            var stringValue = body.First() as string;
+            if (string.IsNullOrEmpty(stringValue))
             {
                 return null;
             }
@@ -66,7 +66,7 @@ namespace CodeSharp.EventSourcing
 
             var messageType = Type.GetType(messageTypeFullName);
 
-            return _jsonSerializer.Deserialize(json, messageType);
+            return _serializer.Deserialize(stringValue, messageType);
         }
     }
 }

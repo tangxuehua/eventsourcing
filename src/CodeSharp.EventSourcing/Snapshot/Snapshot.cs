@@ -57,7 +57,7 @@ namespace CodeSharp.EventSourcing
         /// </summary>
         public object Data { get; set; }
         /// <summary>
-        /// 快照包含的数据的字符串形式，默认是json格式
+        /// 快照包含的数据的字符串形式
         /// </summary>
         public string SerializedData { get; set; }
         /// <summary>

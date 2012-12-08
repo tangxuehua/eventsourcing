@@ -1,0 +1,91 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{ECA04279-0E37-454D-A7B0-C5B3B08A6312}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>EventSourcing.Sample.ConsoleApp</RootNamespace>
+    <AssemblyName>EventSourcing.Sample.ConsoleApp</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="log4net">
+      <HintPath>..\..\..\packages\log4net.1.2.10\lib\2.0\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\packages\Newtonsoft.Json.4.5.10\lib\net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\CodeSharp.EventSourcing\CodeSharp.EventSourcing.csproj">
+      <Project>{F884F01A-ED67-4F21-8576-FD2588491B24}</Project>
+      <Name>CodeSharp.EventSourcing</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EventSourcing.Sample.Application\EventSourcing.Sample.Application.csproj">
+      <Project>{01BA7824-D469-43A7-BD6D-3FD5DB2C537B}</Project>
+      <Name>EventSourcing.Sample.Application</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EventSourcing.Sample.EventSubscribers\EventSourcing.Sample.EventSubscribers.csproj">
+      <Project>{BC2C4E31-AFFD-433A-815E-A92889E81265}</Project>
+      <Name>EventSourcing.Sample.EventSubscribers</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\EventSourcing.Sample.Model\EventSourcing.Sample.Model.csproj">
+      <Project>{B2E0767E-3441-493E-9ACF-CA01100E2741}</Project>
+      <Name>EventSourcing.Sample.Model</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <EmbeddedResource Include="ConfigFiles\Debug\eventsourcing.config" />
+    <EmbeddedResource Include="ConfigFiles\Debug\log4net.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ConfigFiles\Release\" />
+    <Folder Include="ConfigFiles\Test\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

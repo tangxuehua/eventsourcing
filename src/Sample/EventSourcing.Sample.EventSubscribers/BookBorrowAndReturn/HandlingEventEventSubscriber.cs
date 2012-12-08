@@ -1,24 +1,24 @@
-﻿using CodeSharp.EventSourcing;
+﻿using System.Data;
+using CodeSharp.EventSourcing;
 using EventSourcing.Sample.Model.BookBorrowAndReturn;
 
 namespace EventSourcing.Sample.EventSubscribers
 {
     public class HandlingEventEventSubscriber
     {
-        private IDbConnectionFactory _connectionFactory;
+        private IDbConnection _connection;
+        private IDbTransaction _transaction;
 
-        public HandlingEventEventSubscriber(IDbConnectionFactory connectionFactory)
+        public HandlingEventEventSubscriber(ICurrentDbTransactionProvider transactionProvider)
         {
-            _connectionFactory = connectionFactory;
+            _transaction = transactionProvider.CurrentTransaction;
+            _connection = _transaction.Connection;
         }
 
-        [AsyncEventHandler]
+        [SyncEventHandler]
         private void Handle(HandlingEventCreated evnt)
         {
-            using (var conn = _connectionFactory.OpenConnection())
-            {
-                conn.Insert(evnt, "EventSourcing_Sample_HandlingEvent");
-            }
+            _connection.Insert(evnt, "EventSourcing_Sample_HandlingEvent", _transaction);
         }
     }
 }

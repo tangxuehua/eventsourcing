@@ -16,7 +16,7 @@ namespace CodeSharp.EventSourcing
     {
         #region Private Variables
 
-        private IJsonSerializer _jsonSerializer;
+        private ISerializer _serializer;
         private ITypeNameMappingProvider _typeNameMappingProvider;
         private ISourcableEventTypeProvider _sourcableEventTypeProvider;
         private ISourcableEventTableProvider _sourcableEventTableProvider;
@@ -30,7 +30,7 @@ namespace CodeSharp.EventSourcing
         #region Constructors
 
         public DefaultEventStore(
-            IJsonSerializer jsonSerializer,
+            ISerializer serializer,
             ITypeNameMappingProvider typeNameMappingProvider,
             ISourcableEventTypeProvider sourcableEventTypeProvider,
             ISourcableEventTableProvider sourcableEventTableProvider,
@@ -39,7 +39,7 @@ namespace CodeSharp.EventSourcing
             IDbConnectionFactory connectionFactory,
             ILoggerFactory loggerFactory)
         {
-            _jsonSerializer = jsonSerializer;
+            _serializer = serializer;
             _typeNameMappingProvider = typeNameMappingProvider;
             _sourcableEventTypeProvider = sourcableEventTypeProvider;
             _sourcableEventTableProvider = sourcableEventTableProvider;
@@ -181,11 +181,11 @@ namespace CodeSharp.EventSourcing
         }
         private string SerializeEvent(object evnt)
         {
-            return _jsonSerializer.Serialize(evnt);
+            return _serializer.Serialize(evnt);
         }
-        private object DeserializeEvent(Type eventType, string eventJson)
+        private object DeserializeEvent(Type eventType, string value)
         {
-            return _jsonSerializer.Deserialize(eventJson, eventType);
+            return _serializer.Deserialize(value, eventType);
         }
 
         #endregion
