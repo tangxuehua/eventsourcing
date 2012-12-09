@@ -1,11 +1,11 @@
 ﻿//Copyright (c) CodeSharp.  All rights reserved.
 
-namespace CodeSharp.EventSourcing.SubscriptionStorage.NHibernate
+namespace CodeSharp.EventSourcing.NHibernate
 {
     public class Subscription
     {
-        public string UniqueId { get; set; }
-        public string SubscriberAddress { get; set; }
-        public string MessageType { get; set; }
+        public virtual string UniqueId { get; set; }
+        public virtual string SubscriberAddress { get; set; }
+        public virtual string MessageType { get; set; }
     }
 }

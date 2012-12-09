@@ -31,39 +31,39 @@ namespace CodeSharp.EventSourcing
         /// <summary>
         /// 唯一标识
         /// </summary>
-        public string UniqueId { get; set; }
+        public virtual string UniqueId { get; set; }
         /// <summary>
         /// 快照对应的聚合根的类型
         /// </summary>
-        public Type AggregateRootType { get; set; }
+        public virtual Type AggregateRootType { get; set; }
         /// <summary>
         /// 快照对应的聚合根的类型对应的名称
         /// </summary>
-        public string AggregateRootName { get; set; }
+        public virtual string AggregateRootName { get; set; }
         /// <summary>
         /// 快照对应的聚合根的Id
         /// </summary>
-        public string AggregateRootId { get; set; }
+        public virtual string AggregateRootId { get; set; }
         /// <summary>
         /// 快照创建时聚合根的版本
         /// </summary>
-        public long Version { get; set; }
+        public virtual long Version { get; set; }
         /// <summary>
         /// 快照包含的数据的类型对应的名称
         /// </summary>
-        public string Name { get; set; }
+        public virtual string Name { get; set; }
         /// <summary>
         /// 快照包含的数据
         /// </summary>
-        public object Data { get; set; }
+        public virtual object Data { get; set; }
         /// <summary>
         /// 快照包含的数据的字符串形式
         /// </summary>
-        public string SerializedData { get; set; }
+        public virtual string SerializedData { get; set; }
         /// <summary>
         /// 快照创建时间
         /// </summary>
-        public DateTime CreatedTime { get; set; }
+        public virtual DateTime CreatedTime { get; set; }
 
         #endregion
 

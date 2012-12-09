@@ -7,7 +7,7 @@ namespace CodeSharp.EventSourcing
 {
     public class SqlContextTransactionManager : IContextTransactionManager, ICurrentDbTransactionProvider
     {
-        private readonly string DefaultContextTransactionKey = "SqlContextTransactionManager.DefaultContextTransactionKey";
+        private readonly string DefaultContextTransactionKey = "SqlContextTransactionKey";
         private IDbConnectionFactory _connectionFactory;
         private IContextTransactionLifetimeManager _contextTransactionLifetimeManager;
         private ILoggerFactory _loggerFactory;
@@ -29,7 +29,7 @@ namespace CodeSharp.EventSourcing
             {
                 contextTransaction = new SqlContextTransaction(_connectionFactory.OpenConnection().BeginTransaction(), _contextTransactionLifetimeManager, _loggerFactory);
                 _contextTransactionLifetimeManager.Store(DefaultContextTransactionKey, contextTransaction);
-                _logger.Debug("Context transaction created and stored.");
+                _logger.Debug("Sql context transaction created and stored.");
             }
 
             return contextTransaction;

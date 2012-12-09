@@ -28,7 +28,7 @@ CREATE TABLE [dbo].[EventSourcing_Sample_Subscription](
     [UniqueId] [nvarchar](64) NOT NULL,
     [SubscriberAddress] [nvarchar](512) NOT NULL,
     [MessageType] [nvarchar](512) NOT NULL,
- CONSTRAINT [PK_EventSourcing_SubscriptionStorage] PRIMARY KEY CLUSTERED
+ CONSTRAINT [PK_EventSourcing_Sample_Subscription] PRIMARY KEY CLUSTERED
 (
     [UniqueId] ASC
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
@@ -104,6 +104,10 @@ GO
 CREATE TABLE [dbo].[EventSourcing_Sample_Library](
 	[Id] [uniqueidentifier] NULL,
 	[Name] [nvarchar](512) NOT NULL
+ CONSTRAINT [PK_EventSourcing_Sample_Library] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
 GO
@@ -233,6 +237,19 @@ CREATE TABLE [dbo].[EventSourcing_Sample_BalanceChangeHistory](
 	[Description] [nvarchar](max) NOT NULL,
 	[Time] [datetime] NOT NULL
  CONSTRAINT [PK_EventSourcing_Sample_BalanceChangeHistory] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+CREATE TABLE [dbo].[EventSourcing_Sample_Note](
+	[Id] [uniqueidentifier] NOT NULL,
+	[Title] [nvarchar](256) NOT NULL,
+	[CreatedTime] [datetime] NOT NULL,
+	[UpdatedTime] [datetime] NOT NULL,
+ CONSTRAINT [PK_EventSourcing_Sample_Note] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]

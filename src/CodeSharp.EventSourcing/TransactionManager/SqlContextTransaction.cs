@@ -34,7 +34,7 @@ namespace CodeSharp.EventSourcing
         {
             _transaction.Dispose();
             _transactionLifetimeManager.Remove(this);
-            _logger.Debug("Context transaction removed and disposed.");
+            _logger.Debug("Sql context transaction removed and disposed.");
         }
     }
 }

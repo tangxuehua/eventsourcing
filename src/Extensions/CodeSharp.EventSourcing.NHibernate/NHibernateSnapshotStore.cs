@@ -2,10 +2,11 @@
 
 using System;
 using System.Linq;
+using CodeSharp.EventSourcing;
 using NHibernate;
 using NHibernate.Criterion;
 
-namespace CodeSharp.EventSourcing.EventStore.NHibernate
+namespace CodeSharp.EventSourcing.NHibernate
 {
     /// <summary>
     /// NHibernate implementation of snapshot store.
@@ -35,7 +36,7 @@ namespace CodeSharp.EventSourcing.EventStore.NHibernate
             _typeNameMappingProvider = typeNameMappingProvider;
             _snapshotTypeProvider = snapshotTypeProvider;
             _sessionFactory = sessionFactory;
-            _logger = loggerFactory.Create("EventSourcing.EventStore.NHibernateSnapshotStore");
+            _logger = loggerFactory.Create("EventSourcing.NHibernateSnapshotStore");
         }
 
         #endregion

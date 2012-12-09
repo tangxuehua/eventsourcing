@@ -2248,6 +2248,14 @@ namespace TinyIoC
                 return _instance;
             }
 
+            public override ObjectFactoryBase SingletonVariant
+            {
+                get
+                {
+                    return this;
+                }
+            }
+
             public override ObjectFactoryBase MultiInstanceVariant
             {
                 get

@@ -7,50 +7,50 @@ using System.Collections.Concurrent;
 namespace CodeSharp.EventSourcing
 {
     /// <summary>
-    /// In memory implementation of the subscription storage.
+    /// In memory implementation of the subscription store.
     /// </summary>
-    public class InMemorySubscriptionStorage : ISubscriptionStorage
+    public class InMemorySubscriptionStore : ISubscriptionStore
     {
-        private readonly ConcurrentDictionary<Type, List<Address>> _storage = new ConcurrentDictionary<Type, List<Address>>();
+        private readonly ConcurrentDictionary<Type, List<Address>> _subscriptionDictionary = new ConcurrentDictionary<Type, List<Address>>();
 
         public void Subscribe(Address address, Type messageType)
         {
-            if (!_storage.ContainsKey(messageType))
+            if (!_subscriptionDictionary.ContainsKey(messageType))
             {
-                _storage[messageType] = new List<Address>();
+                _subscriptionDictionary[messageType] = new List<Address>();
             }
-            if (!_storage[messageType].Contains(address))
+            if (!_subscriptionDictionary[messageType].Contains(address))
             {
-                _storage[messageType].Add(address);
+                _subscriptionDictionary[messageType].Add(address);
             }
         }
         public void ClearAddressSubscriptions(Address address)
         {
-            foreach (var messageType in _storage.Keys)
+            foreach (var messageType in _subscriptionDictionary.Keys)
             {
-                var addressArray = new Address[_storage[messageType].Count];
-                _storage[messageType].CopyTo(addressArray);
+                var addressArray = new Address[_subscriptionDictionary[messageType].Count];
+                _subscriptionDictionary[messageType].CopyTo(addressArray);
                 foreach (var subscriberAddress in addressArray)
                 {
                     if (subscriberAddress == address)
                     {
-                        _storage[messageType].Remove(subscriberAddress);
+                        _subscriptionDictionary[messageType].Remove(subscriberAddress);
                     }
                 }
             }
         }
         public void Unsubscribe(Address address, Type messageType)
         {
-            if (_storage.ContainsKey(messageType) && _storage[messageType].Contains(address))
+            if (_subscriptionDictionary.ContainsKey(messageType) && _subscriptionDictionary[messageType].Contains(address))
             {
-                _storage[messageType].Remove(address);
+                _subscriptionDictionary[messageType].Remove(address);
             }
         }
         public IEnumerable<Address> GetSubscriberAddressesForMessage(Type messageType)
         {
-            if (_storage.ContainsKey(messageType))
+            if (_subscriptionDictionary.ContainsKey(messageType))
             {
-                return _storage[messageType];
+                return _subscriptionDictionary[messageType];
             }
             return new List<Address>();
         }

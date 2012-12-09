@@ -22,39 +22,39 @@ namespace CodeSharp.EventSourcing
         /// <summary>
         /// 唯一标识
         /// </summary>
-        public string UniqueId { get; set; }
+        public virtual string UniqueId { get; set; }
         /// <summary>
         /// 事件所属聚合根的Id
         /// </summary>
-        public string AggregateRootId { get; set; }
+        public virtual string AggregateRootId { get; set; }
         /// <summary>
         /// 事件所属聚合根的类型
         /// </summary>
-        public Type AggregateRootType { get; set; }
+        public virtual Type AggregateRootType { get; set; }
         /// <summary>
         /// 事件所属聚合根的类型对应的名称
         /// </summary>
-        public string AggregateRootName { get; set; }
+        public virtual string AggregateRootName { get; set; }
         /// <summary>
         /// 事件的版本号
         /// </summary>
-        public long Version { get; set; }
+        public virtual long Version { get; set; }
         /// <summary>
         /// 用户定义的事件对象的类型对应的名称
         /// </summary>
-        public string Name { get; set; }
+        public virtual string Name { get; set; }
         /// <summary>
         /// 用户定义的原始事件对象
         /// </summary>
-        public object RawEvent { get; set; }
+        public virtual object RawEvent { get; set; }
         /// <summary>
         /// 用户定义的事件对象的字符串形式
         /// </summary>
-        public string Data { get; set; }
+        public virtual string Data { get; set; }
         /// <summary>
         /// 事件的发生时间
         /// </summary>
-        public DateTime OccurredTime { get; set; }
+        public virtual DateTime OccurredTime { get; set; }
 
         #endregion
     }
@@ -65,7 +65,7 @@ namespace CodeSharp.EventSourcing
         /// <summary>
         /// 唯一标识
         /// </summary>
-        public new string UniqueId
+        public new virtual string UniqueId
         {
             get
             {
@@ -79,7 +79,7 @@ namespace CodeSharp.EventSourcing
         /// <summary>
         /// 事件所属聚合根的Id
         /// </summary>
-        public new string AggregateRootId
+        public new virtual string AggregateRootId
         {
             get
             {
@@ -93,7 +93,7 @@ namespace CodeSharp.EventSourcing
         /// <summary>
         /// 事件所属聚合根的类型对应的名称
         /// </summary>
-        public new string AggregateRootName
+        public new virtual string AggregateRootName
         {
             get
             {
@@ -107,7 +107,7 @@ namespace CodeSharp.EventSourcing
         /// <summary>
         /// 事件的版本号
         /// </summary>
-        public new long Version
+        public new virtual long Version
         {
             get
             {
@@ -121,7 +121,7 @@ namespace CodeSharp.EventSourcing
         /// <summary>
         /// 用户定义的事件对象的类型对应的名称
         /// </summary>
-        public new string Name
+        public new virtual string Name
         {
             get
             {
@@ -135,7 +135,7 @@ namespace CodeSharp.EventSourcing
         /// <summary>
         /// 用户定义的事件对象的字符串形式
         /// </summary>
-        public new string Data
+        public new virtual string Data
         {
             get
             {
@@ -149,7 +149,7 @@ namespace CodeSharp.EventSourcing
         /// <summary>
         /// 事件的发生时间
         /// </summary>
-        public new DateTime OccurredTime
+        public new virtual DateTime OccurredTime
         {
             get
             {

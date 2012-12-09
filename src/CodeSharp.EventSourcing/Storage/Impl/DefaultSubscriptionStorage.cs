@@ -7,21 +7,21 @@ using System.Threading;
 namespace CodeSharp.EventSourcing
 {
     /// <summary>
-    /// Default implementation of subscription storage, use ADO.NET to persist event subscription.
+    /// Default implementation of subscription store, use ADO.NET to persist event subscription.
     /// </summary>
-    public class DefaultSubscriptionStorage : ISubscriptionStorage
+    public class DefaultSubscriptionStore : ISubscriptionStore
     {
         private IDbConnectionFactory _connectionFactory;
-        private InMemorySubscriptionStorage _storage;
+        private InMemorySubscriptionStore _memoryStore;
         private Timer _refreshSubscriptionTimer;
         private ILogger _logger;
         private const int RefreshPeriod = 30 * 1000; //默认30秒刷新一次订阅者信息
 
-        public DefaultSubscriptionStorage(IDbConnectionFactory connectionFactory, ILoggerFactory loggerFactory)
+        public DefaultSubscriptionStore(IDbConnectionFactory connectionFactory, ILoggerFactory loggerFactory)
         {
             _connectionFactory = connectionFactory;
-            _logger = loggerFactory.Create("EventSourcing.DefaultSubscriptionStorage");
-            _storage = new InMemorySubscriptionStorage();
+            _logger = loggerFactory.Create("EventSourcing.DefaultSubscriptionStore");
+            _memoryStore = new InMemorySubscriptionStore();
             _refreshSubscriptionTimer = new Timer((x) => RefreshSubscriptions(), null, 0, RefreshPeriod);
         }
 
@@ -39,7 +39,7 @@ namespace CodeSharp.EventSourcing
                     _logger.DebugFormat("Subscriber '{0}' subscribes message '{1}'.", subscriberAddress, messageTypeName);
                 }
             }
-            _storage.Subscribe(address, messageType);
+            _memoryStore.Subscribe(address, messageType);
         }
         public void ClearAddressSubscriptions(Address address)
         {
@@ -50,7 +50,7 @@ namespace CodeSharp.EventSourcing
                 connection.Delete(new { SubscriberAddress = subscriberAddress }, table);
                 _logger.DebugFormat("Cleaned up subscriptions of subscriber address '{0}'", subscriberAddress);
             }
-            _storage.ClearAddressSubscriptions(address);
+            _memoryStore.ClearAddressSubscriptions(address);
         }
         public void Unsubscribe(Address address, Type messageType)
         {
@@ -62,11 +62,11 @@ namespace CodeSharp.EventSourcing
                 connection.Delete(new { SubscriberAddress = subscriberAddress, MessageType = messageTypeName }, table);
                 _logger.DebugFormat("Subscriber '{0}' unsubscribes message '{1}'.", subscriberAddress, messageTypeName);
             }
-            _storage.Unsubscribe(address, messageType);
+            _memoryStore.Unsubscribe(address, messageType);
         }
         public IEnumerable<Address> GetSubscriberAddressesForMessage(Type messageType)
         {
-            return _storage.GetSubscriberAddressesForMessage(messageType);
+            return _memoryStore.GetSubscriberAddressesForMessage(messageType);
         }
 
         private void RefreshSubscriptions()
@@ -75,7 +75,7 @@ namespace CodeSharp.EventSourcing
             {
                 var table = Configuration.Instance.GetSetting<string>("subscriptionTable");
                 var subscriptions = connection.QueryAll(table);
-                var storage = new InMemorySubscriptionStorage();
+                var memoryStore = new InMemorySubscriptionStore();
 
                 foreach (var subscription in subscriptions)
                 {
@@ -83,11 +83,11 @@ namespace CodeSharp.EventSourcing
                     var messageType = Type.GetType(subscription.MessageType as string);
                     if (messageType != null)
                     {
-                        storage.Subscribe(address, messageType);
+                        memoryStore.Subscribe(address, messageType);
                     }
                 }
 
-                _storage = storage;
+                _memoryStore = memoryStore;
             }
         }
     }

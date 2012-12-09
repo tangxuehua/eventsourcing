@@ -13,7 +13,7 @@ namespace CodeSharp.EventSourcing
 
         private bool _started;
         private WorkerThread _messageReceiveWorker;
-        private ISubscriptionStorage _subscriptionStorage;
+        private ISubscriptionStore _subscriptionStore;
         private IMessageTransport _messageTransport;
         private IMessageSerializer _messageSerializer;
         private IAsyncEventHandlerProvider _asyncEventHandlerProvider;
@@ -25,16 +25,16 @@ namespace CodeSharp.EventSourcing
 
         public DefaultEventSubscriberEndpoint() : this(
                 ObjectContainer.Resolve<IAsyncEventHandlerProvider>(),
-                ObjectContainer.Resolve<ISubscriptionStorage>(),
+                ObjectContainer.Resolve<ISubscriptionStore>(),
                 ObjectContainer.Resolve<IMessageTransport>(),
                 ObjectContainer.Resolve<IMessageSerializer>(),
                 ObjectContainer.Resolve<ILoggerFactory>())
         {
         }
-        public DefaultEventSubscriberEndpoint(IAsyncEventHandlerProvider asyncEventHandlerProvider, ISubscriptionStorage subscriptionStorage, IMessageTransport messageTransport, IMessageSerializer messageSerializer, ILoggerFactory loggerFactory)
+        public DefaultEventSubscriberEndpoint(IAsyncEventHandlerProvider asyncEventHandlerProvider, ISubscriptionStore subscriptionStore, IMessageTransport messageTransport, IMessageSerializer messageSerializer, ILoggerFactory loggerFactory)
         {
             _asyncEventHandlerProvider = asyncEventHandlerProvider;
-            _subscriptionStorage = subscriptionStorage;
+            _subscriptionStore = subscriptionStore;
             _messageTransport = messageTransport;
             _messageSerializer = messageSerializer;
             _logger = loggerFactory.Create("EventSourcing.DefaultEventSubscriberEndpoint");
@@ -50,11 +50,11 @@ namespace CodeSharp.EventSourcing
             _messageTransport.Init(endpointAddress);
             if (clearSubscriptions)
             {
-                _subscriptionStorage.ClearAddressSubscriptions(endpointAddress);
+                _subscriptionStore.ClearAddressSubscriptions(endpointAddress);
             }
             foreach (var eventType in _asyncEventHandlerProvider.GetAllEventTypes())
             {
-                _subscriptionStorage.Subscribe(endpointAddress, eventType);
+                _subscriptionStore.Subscribe(endpointAddress, eventType);
             }
         }
         public void Start()

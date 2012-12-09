@@ -43,11 +43,11 @@ CREATE TABLE [dbo].[EventSourcing_Snapshot](
 
 GO
 
-CREATE TABLE [dbo].[EventSourcing_SubscriptionStorage](
+CREATE TABLE [dbo].[EventSourcing_SubscriptionStore](
     [UniqueId] [nvarchar](64) NOT NULL,
     [SubscriberAddress] [nvarchar](512) NOT NULL,
     [MessageType] [nvarchar](512) NOT NULL,
- CONSTRAINT [PK_EventSourcing_SubscriptionStorage] PRIMARY KEY CLUSTERED
+ CONSTRAINT [PK_EventSourcing_SubscriptionStore] PRIMARY KEY CLUSTERED
 (
     [UniqueId] ASC
 )WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]

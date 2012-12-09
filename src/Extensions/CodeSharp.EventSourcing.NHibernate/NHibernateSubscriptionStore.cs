@@ -3,20 +3,21 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using CodeSharp.EventSourcing;
 using NHibernate;
 using NHibernate.Criterion;
 
-namespace CodeSharp.EventSourcing.SubscriptionStorage.NHibernate
+namespace CodeSharp.EventSourcing.NHibernate
 {
-    public class NHibernateSubscriptionStorage : ISubscriptionStorage
+    public class NHibernateSubscriptionStore : ISubscriptionStore
     {
         private ISessionFactory _sessionFactory;
         private ILogger _logger;
 
-        public NHibernateSubscriptionStorage(ISessionFactory sessionFactory, ILoggerFactory loggerFactory)
+        public NHibernateSubscriptionStore(ISessionFactory sessionFactory, ILoggerFactory loggerFactory)
         {
             _sessionFactory = sessionFactory;
-            _logger = loggerFactory.Create("EventSourcing.SubscriptionStorage.NHibernate");
+            _logger = loggerFactory.Create("EventSourcing.NHibernateSubscriptionStore");
         }
 
         public void Subscribe(Address address, Type messageType)

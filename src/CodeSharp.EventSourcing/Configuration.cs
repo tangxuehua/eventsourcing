@@ -137,6 +137,10 @@ namespace CodeSharp.EventSourcing
         /// <returns></returns>
         public T GetSetting<T>(string name)
         {
+            if (!Settings.ContainsKey(name))
+            {
+                return default(T);
+            }
             return Utils.ConvertType<T>(Settings[name]);
         }
         /// <summary>
@@ -178,7 +182,7 @@ namespace CodeSharp.EventSourcing
             ObjectContainer.Register<ISnapshotter, DefaultSnapshotter>(LifeStyle.Transient);
             ObjectContainer.Register<ISnapshotPolicy, NoSnapshotPolicy>(LifeStyle.Transient);
             ObjectContainer.Register<IMessageSerializer, DefaultMessageSerializer>(LifeStyle.Transient);
-            ObjectContainer.Register<ISubscriptionStorage, DefaultSubscriptionStorage>();
+            ObjectContainer.Register<ISubscriptionStore, DefaultSubscriptionStore>();
             ObjectContainer.Register<IMessageTransport, MsmqMessageTransport>(LifeStyle.Transient);
             ObjectContainer.Register<IContextLifetimeManager, DynamicContextLifetimeManager>();
             ObjectContainer.Register<IContextManager, DefaultContextManager>(LifeStyle.Transient);
@@ -285,9 +289,9 @@ namespace CodeSharp.EventSourcing
         /// <summary>
         /// 注册事件订阅信息存储器实现类
         /// </summary>
-        public Configuration SubscriptionStorage<T>() where T : class, ISubscriptionStorage
+        public Configuration SubscriptionStore<T>() where T : class, ISubscriptionStore
         {
-            ObjectContainer.RegisterDefault<ISubscriptionStorage, T>();
+            ObjectContainer.RegisterDefault<ISubscriptionStore, T>();
             return this;
         }
         /// <summary>

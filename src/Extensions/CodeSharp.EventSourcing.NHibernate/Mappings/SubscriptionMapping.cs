@@ -2,7 +2,7 @@
 
 using NHibernate.Mapping.ByCode.Conformist;
 
-namespace CodeSharp.EventSourcing.SubscriptionStorage.NHibernate
+namespace CodeSharp.EventSourcing.NHibernate
 {
     public class SubscriptionMapping : ClassMapping<Subscription>
     {

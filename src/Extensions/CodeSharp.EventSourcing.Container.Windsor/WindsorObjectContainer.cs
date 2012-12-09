@@ -28,14 +28,14 @@ namespace CodeSharp.EventSourcing.Container.Windsor
 
             if (!IsRegistered(type))
             {
-                _windsorContainer.Register(Component.For(type).ImplementedBy(type).Life(life));
+                _windsorContainer.Register(Component.For(type).ImplementedBy(type).Named(type.FullName).Life(life));
             }
 
             foreach (var interfaceType in type.GetInterfaces())
             {
                 if (!IsRegistered(interfaceType))
                 {
-                    _windsorContainer.Register(Component.For(interfaceType).ImplementedBy(type).Life(life));
+                    _windsorContainer.Register(Component.For(interfaceType).ImplementedBy(type).Named(interfaceType.FullName).Life(life));
                 }
             }
         }
@@ -68,7 +68,7 @@ namespace CodeSharp.EventSourcing.Container.Windsor
         }
         public void Register<TService, TImpl>(LifeStyle life) where TService : class where TImpl : class, TService
         {
-            _windsorContainer.Register(Component.For<TService>().ImplementedBy<TImpl>().Life(life));
+            _windsorContainer.Register(Component.For<TService>().ImplementedBy<TImpl>().Named(typeof(TService).FullName).Life(life));
         }
         public void Register<TService, TImpl>(string key, LifeStyle life = LifeStyle.Singleton) where TService : class where TImpl : class, TService
         {
@@ -76,11 +76,11 @@ namespace CodeSharp.EventSourcing.Container.Windsor
         }
         public void RegisterDefault<TService, TImpl>(LifeStyle life) where TService : class where TImpl : class, TService
         {
-            _windsorContainer.Register(Component.For<TService>().ImplementedBy<TImpl>().IsDefault().Life(life));
+            _windsorContainer.Register(Component.For<TService>().ImplementedBy<TImpl>().Named(typeof(TService).FullName).IsDefault().Life(life));
         }
         public void Register<T>(T instance, LifeStyle life) where T : class
         {
-            _windsorContainer.Register(Component.For<T>().Instance(instance).Life(life));
+            _windsorContainer.Register(Component.For<T>().Instance(instance).Named(typeof(T).FullName).Life(life));
         }
         public void Register<T>(T instance, string key, LifeStyle life) where T : class
         {
@@ -103,7 +103,7 @@ namespace CodeSharp.EventSourcing.Container.Windsor
         }
         public T Resolve<T>() where T : class
         {
-            return _windsorContainer.Resolve<T>();
+            return _windsorContainer.Resolve<T>(typeof(T).FullName);
         }
         public T Resolve<T>(string key) where T : class
         {
@@ -111,7 +111,7 @@ namespace CodeSharp.EventSourcing.Container.Windsor
         }
         public object Resolve(Type type)
         {
-            return _windsorContainer.Resolve(type);
+            return _windsorContainer.Resolve(type.FullName, type);
         }
         public object Resolve(string key, Type type)
         {

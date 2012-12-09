@@ -5,7 +5,7 @@ using NHibernate.Mapping.ByCode;
 using NHibernate.Mapping.ByCode.Conformist;
 using NHibernate.Type;
 
-namespace CodeSharp.EventSourcing.EventStore.NHibernate
+namespace CodeSharp.EventSourcing.NHibernate
 {
     public abstract class AggregateRootVersionMap<TAggregateRoot> : ClassMap<AggregateRootVersion<TAggregateRoot>> where TAggregateRoot : AggregateRoot
     {

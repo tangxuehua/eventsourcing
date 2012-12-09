@@ -117,7 +117,7 @@
     <Compile Include="EventPublisher\AsyncEventPublisher\IMessageTransport.cs" />
     <Compile Include="EventPublisher\SyncEventPublisher\SyncEventHandlerAttribute.cs" />
     <Compile Include="Domain\ValueObject.cs" />
-    <Compile Include="Storage\ISubscriptionStorage.cs" />
+    <Compile Include="Storage\ISubscriptionStore.cs" />
     <Compile Include="LifetimeManager\AbstractDictStackLifetimeManager.cs" />
     <Compile Include="LifetimeManager\AbstractLifetimeManager.cs" />
     <Compile Include="LifetimeManager\CallContextLifetimeManager.cs" />

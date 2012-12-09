@@ -5,12 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
-using CodeSharp.EventSourcing.EventStore.NHibernate;
-using CodeSharp.EventSourcing.SubscriptionStorage.NHibernate;
 using FluentNHibernate;
 using NHibernate;
 using NHibernate.Mapping.ByCode;
 using NHibernateCfg = NHibernate.Cfg;
+using System.IO;
 
 namespace CodeSharp.EventSourcing.NHibernate
 {
@@ -35,7 +34,10 @@ namespace CodeSharp.EventSourcing.NHibernate
                 .AddSubscriptionNHibernateMappings()
                 .BuildNHibernateSessionFactory();
 
-            ObjectContainer.Register<ISessionHelper, SessionHelper>(LifeStyle.Transient);
+            ObjectContainer.Register<ICurrentSessionProvider, NHibernateContextTransactionManager>(LifeStyle.Transient);
+            configuration.ContextTransactionManager<NHibernateContextTransactionManager>();
+            configuration.EventStore<NHibernateEventStore>();
+            configuration.SubscriptionStore<InMemorySubscriptionStore>();
 
             return configuration;
         }
@@ -48,7 +50,6 @@ namespace CodeSharp.EventSourcing.NHibernate
             var nhibernateConfiguration = new NHibernateCfg.Configuration();
             nhibernateConfiguration.SetProperties(GetConfigSettings());
             ObjectContainer.Register(nhibernateConfiguration);
-
             return configuration;
         }
         /// <summary>
@@ -69,7 +70,7 @@ namespace CodeSharp.EventSourcing.NHibernate
         public static Configuration AddSourcableEventNHibernateMappings(this Configuration configuration, params Assembly[] assemblies)
         {
             var nhibernateConfiguration = ObjectContainer.Resolve<NHibernateCfg.Configuration>();
-            var eventTable = nhibernateConfiguration.Properties["table.event"];
+            var eventTable = nhibernateConfiguration.Properties["eventTable"];
             if (!string.IsNullOrEmpty(eventTable))
             {
                 foreach (var assembly in assemblies)
@@ -92,7 +93,7 @@ namespace CodeSharp.EventSourcing.NHibernate
         public static Configuration AddAggregateRootVersionNHibernateMappings(this Configuration configuration, params Assembly[] assemblies)
         {
             var nhibernateConfiguration = ObjectContainer.Resolve<NHibernateCfg.Configuration>();
-            var versionTable = nhibernateConfiguration.Properties["table.version"];
+            var versionTable = nhibernateConfiguration.Properties["versionTable"];
             if (!string.IsNullOrEmpty(versionTable))
             {
                 foreach (var assembly in assemblies)
@@ -115,7 +116,7 @@ namespace CodeSharp.EventSourcing.NHibernate
         public static Configuration AddSubscriptionNHibernateMappings(this Configuration configuration)
         {
             var nhibernateConfiguration = ObjectContainer.Resolve<NHibernateCfg.Configuration>();
-            var subscriptionTable = nhibernateConfiguration.Properties["table.subscription"];
+            var subscriptionTable = nhibernateConfiguration.Properties["subscriptionTable"];
             if (!string.IsNullOrEmpty(subscriptionTable))
             {
                 var mapper = new ModelMapper();
@@ -143,12 +144,22 @@ namespace CodeSharp.EventSourcing.NHibernate
         private static IDictionary<string, string> GetConfigSettings()
         {
             var settings = new Dictionary<string, string>();
-            var configFile = Configuration.Instance.Properties["nhibernateConfigFile"];
+            var configFile = Configuration.Instance.GetSetting<string>("nhibernateConfigFile");
+            var path = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, configFile);
+            XmlElement element = null;
 
-            XmlDocument document = new XmlDocument();
-            document.Load(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, configFile));
+            if (new FileInfo(path).Exists)
+            {
+                var document = new XmlDocument();
+                document.Load(path);
+                element = document.DocumentElement;
+            }
+            else
+            {
+                element = (Configuration.Instance.Settings["nhibernate"] as XmlNode) as XmlElement;
+            }
 
-            foreach (XmlNode childNode in document.DocumentElement)
+            foreach (XmlNode childNode in element)
             {
                 if (childNode.NodeType == XmlNodeType.Element)
                 {

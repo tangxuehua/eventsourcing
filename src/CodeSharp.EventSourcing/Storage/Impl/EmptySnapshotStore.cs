@@ -5,7 +5,7 @@ using System;
 namespace CodeSharp.EventSourcing
 {
     /// <summary>
-    /// Default empty implementation of snapshot store, not do any snapshot storage.
+    /// Default empty implementation of snapshot store, not do any snapshot store.
     /// </summary>
     public class EmptySnapshotStore : ISnapshotStore
     {

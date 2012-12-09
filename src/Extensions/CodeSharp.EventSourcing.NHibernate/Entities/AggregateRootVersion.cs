@@ -1,15 +1,15 @@
 ﻿//Copyright (c) CodeSharp.  All rights reserved.
 
-namespace CodeSharp.EventSourcing.EventStore.NHibernate
+namespace CodeSharp.EventSourcing.NHibernate
 {
     public class AggregateRootVersion
     {
-        public string AggregateRootId { get; set; }
-        public long Version { get; set; }
+        public virtual string AggregateRootId { get; set; }
+        public virtual long Version { get; set; }
     }
     public class AggregateRootVersion<TAggregateRoot> : AggregateRootVersion where TAggregateRoot : AggregateRoot
     {
-        public new string AggregateRootId
+        public new virtual string AggregateRootId
         {
             get
             {
@@ -20,7 +20,7 @@ namespace CodeSharp.EventSourcing.EventStore.NHibernate
                 base.AggregateRootId = value;
             }
         }
-        public new long Version
+        public new virtual long Version
         {
             get
             {

@@ -8,7 +8,7 @@ using System.Reflection;
 using NHibernate;
 using NHibernate.Criterion;
 
-namespace CodeSharp.EventSourcing.EventStore.NHibernate
+namespace CodeSharp.EventSourcing.NHibernate
 {
     /// <summary>
     /// NHibernate implementation of event store.
@@ -21,6 +21,7 @@ namespace CodeSharp.EventSourcing.EventStore.NHibernate
         private ITypeNameMappingProvider _typeNameMappingProvider;
         private ISourcableEventTypeProvider _sourcableEventTypeProvider;
         private ISessionFactory _sessionFactory;
+        private ICurrentSessionProvider _sessionProvider;
         private ILogger _logger;
 
         #endregion
@@ -32,13 +33,15 @@ namespace CodeSharp.EventSourcing.EventStore.NHibernate
             ITypeNameMappingProvider typeNameMappingProvider,
             ISourcableEventTypeProvider sourcableEventTypeProvider,
             ISessionFactory sessionFactory,
+            ICurrentSessionProvider sessionProvider,
             ILoggerFactory loggerFactory)
         {
             _serializer = serializer;
             _typeNameMappingProvider = typeNameMappingProvider;
             _sourcableEventTypeProvider = sourcableEventTypeProvider;
             _sessionFactory = sessionFactory;
-            _logger = loggerFactory.Create("EventSourcing.EventStore.NHibernateEventStore");
+            _sessionProvider = sessionProvider;
+            _logger = loggerFactory.Create("EventSourcing.NHibernateEventStore");
         }
 
         #endregion
@@ -50,74 +53,12 @@ namespace CodeSharp.EventSourcing.EventStore.NHibernate
                 return;
             }
 
-            using (var session = _sessionFactory.OpenSession())
-            {
-                using (var transaction = session.BeginTransaction())
-                {
-                    _logger.Debug("NHibernate transaction began.");
-
-                    try
-                    {
-                        PersistEvents(session, evnts);
-                        transaction.Commit();
-                        _logger.Debug("NHibernate transaction committed.");
-                    }
-                    catch (ConcurrencyException ex)
-                    {
-                        transaction.Rollback();
-                        _logger.Info("NHibernate transaction rolled back.");
-                        _logger.Error(ex);
-                        throw;
-                    }
-                    catch (StaleObjectStateException ex)
-                    {
-                        transaction.Rollback();
-                        _logger.Info("NHibernate transaction rolled back.");
-                        _logger.Error(ConcurrencyException.DefaultConcurrencyExceptionMessage, ex);
-                        throw;
-                    }
-                    catch (Exception ex)
-                    {
-                        transaction.Rollback();
-                        _logger.Info("NHibernate transaction rolled back.");
-                        _logger.Error("Unknown error when storing sourcable events.", ex);
-                        throw;
-                    }
-                }
-            }
-        }
-        public virtual IEnumerable<SourcableEvent> GetEvents(string aggregateRootId, Type aggregateRootType, long minVersion, long maxVersion)
-        {
-            var evnts = new List<SourcableEvent>();
-            var session = _sessionFactory.OpenSession();
-
-            Type eventType = _sourcableEventTypeProvider.GetSourcableEventType(aggregateRootType);
-            ICriteria criteria = session.CreateCriteria(eventType);
-            criteria.Add(Restrictions.Eq("AggregateRootId", aggregateRootId));
-            criteria.Add(Restrictions.Eq("AggregateRootName", GetAggregateRootName(aggregateRootType)));
-            criteria.Add(Restrictions.Ge("Version", minVersion));
-            criteria.Add(Restrictions.Le("Version", maxVersion));
-            criteria.AddOrder(new Order("Version", true));
-
-            var eventList = EventQueryHelper.GetEventList(eventType, criteria);
-
-            foreach (var evnt in eventList)
-            {
-                var sourcableEvent = evnt as SourcableEvent;
-                sourcableEvent.AggregateRootType = aggregateRootType;
-                sourcableEvent.RawEvent = DeserializeEvent(GetEventType(sourcableEvent.Name), sourcableEvent.Data);
-                evnts.Add(sourcableEvent);
-            }
-
-            return evnts;
-        }
-
-        protected virtual void PersistEvents(ISession session, IEnumerable<SourcableEvent> evnts)
-        {
             //先对事件按照聚合根进行分组
             var eventGroupList = from evnt in evnts
                                  group evnt by new { AggregateRootType = evnt.AggregateRootType, evnt.AggregateRootId } into groupedEvents
                                  select groupedEvents;
+
+            var session = _sessionProvider.CurrentSession;
 
             //持久化每个聚合根的事件
             foreach (var eventGroup in eventGroupList)
@@ -145,6 +86,31 @@ namespace CodeSharp.EventSourcing.EventStore.NHibernate
                     throw new ConcurrencyException(ConcurrencyException.DefaultConcurrencyExceptionMessage);
                 }
             }
+        }
+        public virtual IEnumerable<SourcableEvent> GetEvents(string aggregateRootId, Type aggregateRootType, long minVersion, long maxVersion)
+        {
+            var evnts = new List<SourcableEvent>();
+            var session = _sessionFactory.OpenSession();
+            var eventType = _sourcableEventTypeProvider.GetSourcableEventType(aggregateRootType);
+            var criteria = session.CreateCriteria(eventType);
+
+            criteria.Add(Restrictions.Eq("AggregateRootId", aggregateRootId));
+            criteria.Add(Restrictions.Eq("AggregateRootName", GetAggregateRootName(aggregateRootType)));
+            criteria.Add(Restrictions.Ge("Version", minVersion));
+            criteria.Add(Restrictions.Le("Version", maxVersion));
+            criteria.AddOrder(new Order("Version", true));
+
+            var eventList = EventQueryHelper.GetEventList(eventType, criteria);
+
+            foreach (var evnt in eventList)
+            {
+                var sourcableEvent = evnt as SourcableEvent;
+                sourcableEvent.AggregateRootType = aggregateRootType;
+                sourcableEvent.RawEvent = DeserializeEvent(GetEventType(sourcableEvent.Name), sourcableEvent.Data);
+                evnts.Add(sourcableEvent);
+            }
+
+            return evnts;
         }
 
         #region Private Methods

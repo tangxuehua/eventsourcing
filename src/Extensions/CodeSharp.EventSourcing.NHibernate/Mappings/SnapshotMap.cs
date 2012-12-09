@@ -3,7 +3,7 @@
 using FluentNHibernate.Mapping;
 using NHibernate.Mapping.ByCode.Conformist;
 
-namespace CodeSharp.EventSourcing.EventStore.NHibernate
+namespace CodeSharp.EventSourcing.NHibernate
 {
     public abstract class SnapshotMap : ClassMap<Snapshot>
     {

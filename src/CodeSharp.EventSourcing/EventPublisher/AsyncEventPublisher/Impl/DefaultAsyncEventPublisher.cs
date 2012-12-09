@@ -11,7 +11,7 @@ namespace CodeSharp.EventSourcing
     {
         #region Private Variables
 
-        private ISubscriptionStorage _subscriptionStorage;
+        private ISubscriptionStore _subscriptionStore;
         private IMessageTransport _messageTransport;
         private IMessageSerializer _messageSerializer;
         private ILogger _logger;
@@ -20,9 +20,9 @@ namespace CodeSharp.EventSourcing
 
         #region Constructors
 
-        public DefaultAsyncEventPublisher(ISubscriptionStorage subscriptionStorage, IMessageTransport messageTransport, IMessageSerializer messageSerializer, ILoggerFactory loggerFactory)
+        public DefaultAsyncEventPublisher(ISubscriptionStore subscriptionStore, IMessageTransport messageTransport, IMessageSerializer messageSerializer, ILoggerFactory loggerFactory)
         {
-            _subscriptionStorage = subscriptionStorage;
+            _subscriptionStore = subscriptionStore;
             _messageTransport = messageTransport;
             _messageSerializer = messageSerializer;
             _logger = loggerFactory.Create("EventSourcing.DefaultAsyncEventPublisher");
@@ -33,7 +33,7 @@ namespace CodeSharp.EventSourcing
         public void PublishEvent(object evnt)
         {
             var eventTypeName = evnt.GetType().FullName;
-            var addresses = _subscriptionStorage.GetSubscriberAddressesForMessage(evnt.GetType());
+            var addresses = _subscriptionStore.GetSubscriberAddressesForMessage(evnt.GetType());
 
             if (addresses.Count() == 0)
             {

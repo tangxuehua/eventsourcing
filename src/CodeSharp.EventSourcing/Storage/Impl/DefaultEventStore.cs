@@ -53,6 +53,11 @@ namespace CodeSharp.EventSourcing
 
         public virtual void StoreEvents(IEnumerable<SourcableEvent> evnts)
         {
+            if (evnts.Count() == 0)
+            {
+                return;
+            }
+
             var transaction = _transactionProvider.CurrentTransaction;
             var connection = transaction.Connection;
 
