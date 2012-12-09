@@ -2,6 +2,7 @@
 
 using System;
 using System.IO;
+using System.Xml;
 using log4net;
 using log4net.Config;
 
@@ -11,8 +12,17 @@ namespace CodeSharp.EventSourcing
     {
         public Log4NetLoggerFactory()
         {
-            var configFile = Configuration.Instance.Properties["log4netConfigFile"];
-            XmlConfigurator.ConfigureAndWatch(new FileInfo(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, configFile)));
+            var configFile = Configuration.Instance.Settings["log4netConfigFile"] as string;
+            var file = new FileInfo(System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, configFile));
+            if (file.Exists)
+            {
+                XmlConfigurator.ConfigureAndWatch(file);
+            }
+            else
+            {
+                var log4netElement = (Configuration.Instance.Settings["log4net"] as XmlNode) as XmlElement;
+                XmlConfigurator.Configure(log4netElement);
+            }
         }
 
         ILogger ILoggerFactory.Create(string name)

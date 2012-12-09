@@ -31,7 +31,7 @@ namespace CodeSharp.EventSourcing
             {
                 var subscriberAddress = address.ToString();
                 var messageTypeName = messageType.AssemblyQualifiedName;
-                var table = Configuration.Instance.Properties["subscriptionTable"];
+                var table = Configuration.Instance.GetSetting<string>("subscriptionTable");
                 var count = connection.GetCount(new { SubscriberAddress = subscriberAddress, MessageType = messageTypeName }, table);
                 if (count == 0)
                 {
@@ -46,7 +46,7 @@ namespace CodeSharp.EventSourcing
             using (var connection = _connectionFactory.OpenConnection())
             {
                 var subscriberAddress = address.ToString();
-                var table = Configuration.Instance.Properties["subscriptionTable"];
+                var table = Configuration.Instance.GetSetting<string>("subscriptionTable");
                 connection.Delete(new { SubscriberAddress = subscriberAddress }, table);
                 _logger.DebugFormat("Cleaned up subscriptions of subscriber address '{0}'", subscriberAddress);
             }
@@ -58,7 +58,7 @@ namespace CodeSharp.EventSourcing
             {
                 var subscriberAddress = address.ToString();
                 var messageTypeName = messageType.AssemblyQualifiedName;
-                var table = Configuration.Instance.Properties["subscriptionTable"];
+                var table = Configuration.Instance.GetSetting<string>("subscriptionTable");
                 connection.Delete(new { SubscriberAddress = subscriberAddress, MessageType = messageTypeName }, table);
                 _logger.DebugFormat("Subscriber '{0}' unsubscribes message '{1}'.", subscriberAddress, messageTypeName);
             }
@@ -73,7 +73,7 @@ namespace CodeSharp.EventSourcing
         {
             using (var connection = _connectionFactory.OpenConnection())
             {
-                var table = Configuration.Instance.Properties["subscriptionTable"];
+                var table = Configuration.Instance.GetSetting<string>("subscriptionTable");
                 var subscriptions = connection.QueryAll(table);
                 var storage = new InMemorySubscriptionStorage();
 
@@ -81,7 +81,10 @@ namespace CodeSharp.EventSourcing
                 {
                     var address = Address.Parse(subscription.SubscriberAddress as string);
                     var messageType = Type.GetType(subscription.MessageType as string);
-                    storage.Subscribe(address, messageType);
+                    if (messageType != null)
+                    {
+                        storage.Subscribe(address, messageType);
+                    }
                 }
 
                 _storage = storage;

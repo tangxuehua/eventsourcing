@@ -9,7 +9,7 @@ namespace CodeSharp.EventSourcing
     {
         public IDbConnection OpenConnection()
         {
-            var connection = new SqlConnection(Configuration.Instance.Properties["connectionString"]);
+            var connection = new SqlConnection(Configuration.Instance.GetSetting<string>("connectionString"));
             connection.Open();
             return connection;
         }

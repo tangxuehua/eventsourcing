@@ -98,13 +98,13 @@ namespace CodeSharp.EventSourcing
                     var key = child.Attribute("key").Value;
                     var value = child.Attribute("value").Value;
 
-                    if (configuration.Properties.ContainsKey(key))
+                    if (configuration.Settings.ContainsKey(key))
                     {
-                        configuration.Properties[key] = value;
+                        configuration.Settings[key] = value;
                     }
                     else
                     {
-                        configuration.Properties.Add(key, value);
+                        configuration.Settings.Add(key, value);
                     }
                 }
             }

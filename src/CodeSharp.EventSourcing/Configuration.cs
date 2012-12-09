@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Reflection;
 
 namespace CodeSharp.EventSourcing
@@ -25,7 +26,7 @@ namespace CodeSharp.EventSourcing
         /// <summary>
         /// 应用的所有配置信息
         /// </summary>
-        public IDictionary<string, string> Properties { get; private set; }
+        public IDictionary<string, object> Settings { get; private set; }
 
         private Configuration(string appName)
         {
@@ -35,11 +36,14 @@ namespace CodeSharp.EventSourcing
             }
 
             AppName = appName;
-            Properties = new Dictionary<string, string>();
+            Settings = new Dictionary<string, object>();
         }
 
         /// <summary>
-        /// 采用所有默认方式配置EventSourcing框架
+        /// 采用所有默认方式配置EventSourcing框架。
+        /// <remarks>
+        /// 默认使用DefaultConfigurationInitializer以及TinyIoc Container来初始化框架。
+        /// </remarks>
         /// </summary>
         /// <param name="appName">应用名称</param>
         /// <param name="configAssembly">配置文件资源所在程序集</param>
@@ -47,9 +51,51 @@ namespace CodeSharp.EventSourcing
         /// <returns></returns>
         public static Configuration Config(string appName, Assembly configAssembly, params Assembly[] assemblies)
         {
-            return Configuration.Create(appName)
-                .Initialize(new DefaultConfigurationInitializer(configAssembly))
-                .Container(new TinyIoCObjectContainer(), assemblies);
+            return Configuration.Config(appName, new DefaultConfigurationInitializer(configAssembly), assemblies);
+        }
+        /// <summary>
+        /// 采用所有默认方式配置EventSourcing框架，配置信息初始化器由用户指定。
+        /// <remarks>
+        /// 用户可以调用此重载使用自己喜欢的方式来初始化框架配置信息。
+        /// </remarks>
+        /// </summary>
+        /// <param name="appName">应用名称</param>
+        /// <param name="configurationInitializer">框架配置初始化器</param>
+        /// <param name="assemblies">其他相关的程序集</param>
+        /// <returns></returns>
+        public static Configuration Config(string appName, IConfigurationInitializer configurationInitializer, params Assembly[] assemblies)
+        {
+            return Configuration.Config(appName, configurationInitializer, new TinyIoCObjectContainer(), assemblies);
+        }
+        /// <summary>
+        /// 采用所有默认方式配置EventSourcing框架，IoC容器由用户指定。
+        /// <remarks>
+        /// 用户可以调用此重载告诉框架该使用哪个IoC容器。
+        /// </remarks>
+        /// </summary>
+        /// <param name="appName">应用名称</param>
+        /// <param name="configAssembly">配置文件资源所在程序集</param>
+        /// <param name="container">对象容器</param>
+        /// <param name="assemblies">其他相关的程序集</param>
+        /// <returns></returns>
+        public static Configuration Config(string appName, Assembly configAssembly, IObjectContainer container, params Assembly[] assemblies)
+        {
+            return Configuration.Config(appName, new DefaultConfigurationInitializer(configAssembly), container, assemblies);
+        }
+        /// <summary>
+        /// 采用所有默认方式配置EventSourcing框架，配置信息初始化器以及IoC容器都由用户指定。
+        /// <remarks>
+        /// 用户可以调用此重载使用自己喜欢的方式来初始化框架配置信息以及告诉框架该使用哪个IoC容器。
+        /// </remarks>
+        /// </summary>
+        /// <param name="appName">应用名称</param>
+        /// <param name="configurationInitializer">框架配置初始化器</param>
+        /// <param name="container">对象容器</param>
+        /// <param name="assemblies">其他相关的程序集</param>
+        /// <returns></returns>
+        public static Configuration Config(string appName, IConfigurationInitializer configurationInitializer, IObjectContainer container, params Assembly[] assemblies)
+        {
+            return Configuration.Create(appName).Initialize(configurationInitializer).Container(container, assemblies);
         }
         /// <summary>
         /// 创建一个配置类实例，不能重复调用该方法进行创建
@@ -64,6 +110,34 @@ namespace CodeSharp.EventSourcing
             }
             _instance = new Configuration(appName);
             return _instance;
+        }
+        /// <summary>
+        /// 设置框架配置信息
+        /// </summary>
+        /// <param name="collection"></param>
+        public void SetSettings(NameValueCollection collection)
+        {
+            foreach (string key in collection.Keys)
+            {
+                if (Settings.ContainsKey(key))
+                {
+                    Settings[key] = collection[key];
+                }
+                else
+                {
+                    Settings.Add(key, collection[key]);
+                }
+            }
+        }
+        /// <summary>
+        /// 获取指定名称的值
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public T GetSetting<T>(string name)
+        {
+            return Utils.ConvertType<T>(Settings[name]);
         }
         /// <summary>
         /// 设置当前运行环境，可能的值有：Debug,Test,Release，只能设置一次
@@ -113,8 +187,8 @@ namespace CodeSharp.EventSourcing
             ObjectContainer.Register<IAggregateEventHandlerProvider, DefaultAggregateEventHandlerProvider>();
             ObjectContainer.Register<ISourcableEventTypeProvider, DefaultSourcableEventTypeProvider>();
             ObjectContainer.Register<IAggregateRootInternalHandlerProvider, DefaultAggregateRootInternalHandlerProvider>();
-            ObjectContainer.Register<ITypeNameMappingProvider, DefaultTypeNameMappingProvider>();
             ObjectContainer.Register<IEventTypeProvider, DefaultEventTypeProvider>();
+            ObjectContainer.Register<ITypeNameMappingProvider, DefaultTypeNameMappingProvider>();
             ObjectContainer.Register<IEventStore, DefaultEventStore>(LifeStyle.Transient);
             ObjectContainer.Register<ISnapshotStore, EmptySnapshotStore>(LifeStyle.Transient);
             ObjectContainer.Register<ISyncEventPublisher, DefaultSyncEventPublisher>(LifeStyle.Transient);
@@ -179,7 +253,7 @@ namespace CodeSharp.EventSourcing
         /// <summary>
         /// 注册Serializer实现类
         /// </summary>
-        public Configuration JsonSerializer<T>() where T : class, ISerializer
+        public Configuration Serializer<T>() where T : class, ISerializer
         {
             ObjectContainer.RegisterDefault<ISerializer, T>(LifeStyle.Transient);
             return this;

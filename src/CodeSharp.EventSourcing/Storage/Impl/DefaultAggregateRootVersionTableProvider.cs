@@ -23,7 +23,7 @@ namespace CodeSharp.EventSourcing
             {
                 return _mappings[aggregateRootType];
             }
-            return Configuration.Instance.Properties["versionTable"];
+            return Configuration.Instance.GetSetting<string>("versionTable");
         }
     }
 }
