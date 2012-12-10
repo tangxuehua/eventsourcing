@@ -54,10 +54,10 @@
     <Compile Include="EventPublisher\SyncEventPublisher\ISyncEventPublisher.cs" />
     <Compile Include="ObjectContainer\TinyIoC.cs" />
     <Compile Include="ObjectContainer\TinyIoCObjectContainer.cs" />
-    <Compile Include="Storage\Impl\DefaultSubscriptionStorage.cs" />
-    <Compile Include="EventSubscriber\IEventSubscriberEndpoint.cs" />
+    <Compile Include="Storage\Impl\DefaultSubscriptionStore.cs" />
+    <Compile Include="EventPublisher\AsyncEventSubscriberEndpoint\IAsyncEventSubscriberEndpoint.cs" />
     <Compile Include="EventPublisher\AsyncEventPublisher\IAsyncEventHandlerProvider.cs" />
-    <Compile Include="EventSubscriber\DefaultEventSubscriberEndpoint.cs" />
+    <Compile Include="EventPublisher\AsyncEventSubscriberEndpoint\DefaultAsyncEventSubscriberEndpoint.cs" />
     <Compile Include="EventPublisher\EventHandlerProvider\AttributeBasedEventHandlerProvider.cs" />
     <Compile Include="EventPublisher\EventHandlerProvider\InterfaceBasedEventHandlerProvider.cs" />
     <Compile Include="EventPublisher\EventHandlerMetaData.cs" />
@@ -108,7 +108,7 @@
     <Compile Include="EventPublisher\AsyncEventPublisher\Impl\DefaultMessageSerializer.cs" />
     <Compile Include="EventPublisher\AsyncEventPublisher\Message.cs" />
     <Compile Include="EventSourcingException.cs" />
-    <Compile Include="Storage\Impl\InMemorySubscriptionStorage.cs" />
+    <Compile Include="Storage\Impl\InMemorySubscriptionStore.cs" />
     <Compile Include="EventPublisher\AsyncEventPublisher\Impl\MsmqMessageTransport.cs" />
     <Compile Include="EventPublisher\AsyncEventPublisher\MsmqUtilities.cs" />
     <Compile Include="EventPublisher\AsyncEventPublisher\Headers.cs" />

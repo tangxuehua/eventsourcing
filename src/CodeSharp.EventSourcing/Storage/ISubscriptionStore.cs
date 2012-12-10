@@ -35,5 +35,9 @@ namespace CodeSharp.EventSourcing
         /// <param name="messageType"></param>
         /// <returns></returns>
         IEnumerable<Address> GetSubscriberAddressesForMessage(Type messageType);
+        /// <summary>
+        /// 刷新订阅者信息
+        /// </summary>
+        void RefreshSubscriptions();
     }
 }

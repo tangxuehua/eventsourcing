@@ -9,7 +9,9 @@ namespace EventSourcing.Sample.AsyncEventBus
         static void Main(string[] args)
         {
             var assembly = Assembly.GetExecutingAssembly();
-            Configuration.Config("EventSourcing.Sample.AsyncEventBus", assembly, assembly);
+            Configuration
+                .Config("EventSourcing.Sample.AsyncEventBus", assembly, assembly)
+                .StartAsyncEventPublisherEndpoint();
 
             var noteService = ObjectContainer.Resolve<INoteService>();
             var note = noteService.CreateNote("Sample Note");

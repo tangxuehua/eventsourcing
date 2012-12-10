@@ -21,7 +21,7 @@ namespace EventSourcing.Sample.Host
             var eventSubscriberAssembly = Assembly.Load("EventSourcing.Sample.EventSubscribers");
             var configAssembly = Assembly.GetExecutingAssembly();
 
-            Configuration.Config("EventSourcing.Sample.Host", configAssembly, eventSubscriberAssembly).StartEventSubscriberEndpoint();
+            Configuration.Config("EventSourcing.Sample.Host", configAssembly, eventSubscriberAssembly).StartAsyncEventSubscriberEndpoint();
         }
     }
 }

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading;
 
 namespace CodeSharp.EventSourcing
 {
@@ -14,7 +15,10 @@ namespace CodeSharp.EventSourcing
         private ISubscriptionStore _subscriptionStore;
         private IMessageTransport _messageTransport;
         private IMessageSerializer _messageSerializer;
+        private Timer _refreshSubscriptionTimer;
         private ILogger _logger;
+        private const int RefreshPeriod = 30 * 1000; //默认30秒刷新一次订阅者信息
+        private bool _started = false;
 
         #endregion
 
@@ -32,6 +36,11 @@ namespace CodeSharp.EventSourcing
 
         public void PublishEvent(object evnt)
         {
+            if (!_started)
+            {
+                return;
+            }
+
             var eventTypeName = evnt.GetType().FullName;
             var addresses = _subscriptionStore.GetSubscriberAddressesForMessage(evnt.GetType());
 
@@ -51,10 +60,20 @@ namespace CodeSharp.EventSourcing
         }
         public void PublishEvents(IEnumerable<object> evnts)
         {
+            if (!_started)
+            {
+                return;
+            }
+
             foreach (var evnt in evnts)
             {
                 PublishEvent(evnt);
             }
+        }
+        public void Start()
+        {
+            _refreshSubscriptionTimer = new Timer((x) => _subscriptionStore.RefreshSubscriptions(), null, 0, RefreshPeriod);
+            _started = true;
         }
 
         private Message CreateMessage(object evnt)

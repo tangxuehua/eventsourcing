@@ -12,11 +12,13 @@ namespace CodeSharp.EventSourcing.NHibernate
     public class NHibernateSubscriptionStore : ISubscriptionStore
     {
         private ISessionFactory _sessionFactory;
+        private InMemorySubscriptionStore _memoryStore;
         private ILogger _logger;
 
         public NHibernateSubscriptionStore(ISessionFactory sessionFactory, ILoggerFactory loggerFactory)
         {
             _sessionFactory = sessionFactory;
+            _memoryStore = new InMemorySubscriptionStore();
             _logger = loggerFactory.Create("EventSourcing.NHibernateSubscriptionStore");
         }
 
@@ -40,6 +42,7 @@ namespace CodeSharp.EventSourcing.NHibernate
                     };
                     session.Save(subscription);
                     session.Flush();
+                    _memoryStore.Subscribe(address, messageType);
                     _logger.DebugFormat("Subscriber '{0}' subscribes message '{1}'.", subscriberAddress, messageTypeName);
                 }
             }
@@ -57,6 +60,7 @@ namespace CodeSharp.EventSourcing.NHibernate
                     session.Delete(subscription);
                 }
                 session.Flush();
+                _memoryStore.ClearAddressSubscriptions(address);
                 _logger.DebugFormat("Cleaned up subscriptions of subscriber address '{0}'", subscriberAddress);
             }
         }
@@ -74,22 +78,34 @@ namespace CodeSharp.EventSourcing.NHibernate
                 {
                     session.Delete(subscription);
                     session.Flush();
+                    _memoryStore.Unsubscribe(address, messageType);
                     _logger.DebugFormat("Subscriber '{0}' unsubscribes message '{1}'.", subscriberAddress, messageTypeName);
                 }
             }
         }
         public IEnumerable<Address> GetSubscriberAddressesForMessage(Type messageType)
         {
-            using (var session = _sessionFactory.OpenSession())
-            {
-                var criteria = session.CreateCriteria<Subscription>();
-                criteria.Add(Expression.Eq("MessageType", messageType.AssemblyQualifiedName));
-                return criteria.List<Subscription>().Select(x => Address.Parse(x.SubscriberAddress));
-            }
+            return _memoryStore.GetSubscriberAddressesForMessage(messageType);
         }
-
         public void RefreshSubscriptions()
         {
+            using (var session = _sessionFactory.OpenSession())
+            {
+                var subscriptions = session.CreateCriteria<Subscription>().List<Subscription>();
+                var memoryStore = new InMemorySubscriptionStore();
+
+                foreach (var subscription in subscriptions)
+                {
+                    var address = Address.Parse(subscription.SubscriberAddress as string);
+                    var messageType = Type.GetType(subscription.MessageType as string);
+                    if (messageType != null)
+                    {
+                        memoryStore.Subscribe(address, messageType);
+                    }
+                }
+
+                _memoryStore = memoryStore;
+            }
         }
     }
 }

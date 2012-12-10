@@ -11,7 +11,7 @@ namespace EventSourcing.Sample.AsyncEventBus.Host
             var assembly = Assembly.GetExecutingAssembly();
             Configuration
                 .Config("EventSourcing.Sample.AsyncEventBus.Host", assembly, assembly)
-                .StartEventSubscriberEndpoint();
+                .StartAsyncEventSubscriberEndpoint();
             Console.WriteLine("EventSourcing.Sample.AsyncEventBus.Host started, press Enter to exit.");
             Console.ReadLine();
         }

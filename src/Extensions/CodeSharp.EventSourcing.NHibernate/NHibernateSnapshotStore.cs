@@ -47,8 +47,6 @@ namespace CodeSharp.EventSourcing.NHibernate
             {
                 using (var transaction = session.BeginTransaction())
                 {
-                    _logger.Debug("NHibernate transaction began.");
-
                     try
                     {
                         snapshot.AggregateRootName = GetAggregateRootName(snapshot.AggregateRootType);
@@ -56,12 +54,10 @@ namespace CodeSharp.EventSourcing.NHibernate
                         snapshot.SerializedData = SerializeSnapshotData(snapshot.Data);
                         session.SaveOrUpdate(snapshot);
                         transaction.Commit();
-                        _logger.Debug("NHibernate transaction committed.");
                     }
                     catch (Exception ex)
                     {
                         transaction.Rollback();
-                        _logger.Info("NHibernate transaction rolled back.");
                         _logger.Error("Unknown error when storing snapshot.", ex);
                         throw;
                     }
@@ -94,7 +90,7 @@ namespace CodeSharp.EventSourcing.NHibernate
 
         #region Private Methods
 
-        private Type GetaggregateRootType(string aggregateRootName)
+        private Type GetAggregateRootType(string aggregateRootName)
         {
             return _typeNameMappingProvider.GetType(NameTypeMappingType.AggregateRootMapping, aggregateRootName);
         }

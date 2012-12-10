@@ -17,5 +17,9 @@ namespace CodeSharp.EventSourcing
         /// 分发多个事件
         /// </summary>
         void PublishEvents(IEnumerable<object> evnts);
+        /// <summary>
+        /// 启动事件发布者
+        /// </summary>
+        void Start();
     }
 }

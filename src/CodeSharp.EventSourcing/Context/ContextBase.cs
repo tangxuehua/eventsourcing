@@ -138,13 +138,16 @@ namespace CodeSharp.EventSourcing
             AggregateRoot aggregateRoot = null;
             long minEventVersion = long.MinValue;
             long maxEventVersion = long.MaxValue;
+            bool snapshotEnabled = Configuration.Instance.GetSetting<bool>("snapshotEnabled");
 
-            bool success = TryGetFromSnapshot(aggregateRootId, aggregateRootType, out aggregateRoot);
-
-            if (!success)
+            if (snapshotEnabled && TryGetFromSnapshot(aggregateRootId, aggregateRootType, out aggregateRoot))
             {
-                var allCommittedEvents = _eventStore.GetEvents(aggregateRootId, aggregateRootType, minEventVersion, maxEventVersion);
-                aggregateRoot = BuildAggregateRoot(aggregateRootType, allCommittedEvents);
+                return aggregateRoot;
+            }
+            else
+            {
+                var allSourcableEvents = _eventStore.GetEvents(aggregateRootId, aggregateRootType, minEventVersion, maxEventVersion);
+                aggregateRoot = BuildAggregateRoot(aggregateRootType, allSourcableEvents);
             }
 
             return aggregateRoot;

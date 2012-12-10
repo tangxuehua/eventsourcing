@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml;
@@ -9,7 +10,6 @@ using FluentNHibernate;
 using NHibernate;
 using NHibernate.Mapping.ByCode;
 using NHibernateCfg = NHibernate.Cfg;
-using System.IO;
 
 namespace CodeSharp.EventSourcing.NHibernate
 {
@@ -34,11 +34,20 @@ namespace CodeSharp.EventSourcing.NHibernate
                 .AddSubscriptionNHibernateMappings()
                 .BuildNHibernateSessionFactory();
 
-            ObjectContainer.Register<ICurrentSessionProvider, NHibernateContextTransactionManager>(LifeStyle.Transient);
             configuration.ContextTransactionManager<NHibernateContextTransactionManager>();
+            configuration.CurrentSessionProvider<NHibernateContextTransactionManager>();
             configuration.EventStore<NHibernateEventStore>();
-            configuration.SubscriptionStore<InMemorySubscriptionStore>();
+            configuration.SnapshotStore<NHibernateSnapshotStore>();
+            configuration.SubscriptionStore<NHibernateSubscriptionStore>();
 
+            return configuration;
+        }
+        /// <summary>
+        /// 注册当前Session提供者实现类
+        /// </summary>
+        public static Configuration CurrentSessionProvider<T>(this Configuration configuration) where T : class, ICurrentSessionProvider
+        {
+            ObjectContainer.Register<ICurrentSessionProvider, T>(LifeStyle.Transient);
             return configuration;
         }
         /// <summary>

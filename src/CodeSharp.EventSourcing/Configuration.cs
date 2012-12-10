@@ -195,9 +195,9 @@ namespace CodeSharp.EventSourcing
             ObjectContainer.Register<ITypeNameMappingProvider, DefaultTypeNameMappingProvider>();
             ObjectContainer.Register<IEventStore, DefaultEventStore>(LifeStyle.Transient);
             ObjectContainer.Register<ISnapshotStore, EmptySnapshotStore>(LifeStyle.Transient);
-            ObjectContainer.Register<ISyncEventPublisher, DefaultSyncEventPublisher>(LifeStyle.Transient);
-            ObjectContainer.Register<IAsyncEventPublisher, DefaultAsyncEventPublisher>(LifeStyle.Transient);
-            ObjectContainer.Register<IEventSubscriberEndpoint, DefaultEventSubscriberEndpoint>();
+            ObjectContainer.Register<ISyncEventPublisher, DefaultSyncEventPublisher>();
+            ObjectContainer.Register<IAsyncEventPublisher, DefaultAsyncEventPublisher>();
+            ObjectContainer.Register<IAsyncEventSubscriberEndpoint, DefaultAsyncEventSubscriberEndpoint>();
             ObjectContainer.Register<IDbConnectionFactory, SqlConnectionFactory>(LifeStyle.Transient);
             ObjectContainer.Register<IAggregateRootVersionTableProvider, DefaultAggregateRootVersionTableProvider>();
             ObjectContainer.Register<ISourcableEventTableProvider, DefaultSourcableEventTableProvider>();
@@ -391,7 +391,7 @@ namespace CodeSharp.EventSourcing
             return this;
         }
         /// <summary>
-        /// 注册同步的EventPublisher实现类
+        /// 注册同步的事件发布者实现类
         /// </summary>
         public Configuration SyncEventPublisher<T>() where T : class, ISyncEventPublisher
         {
@@ -399,7 +399,7 @@ namespace CodeSharp.EventSourcing
             return this;
         }
         /// <summary>
-        /// 注册异步的EventPublisher实现类
+        /// 注册异步的事件发布者实现类
         /// </summary>
         public Configuration AsyncEventPublisher<T>() where T : class, IAsyncEventPublisher
         {
@@ -407,11 +407,11 @@ namespace CodeSharp.EventSourcing
             return this;
         }
         /// <summary>
-        /// 注册事件订阅者端点实现类
+        /// 注册异步的事件订阅者端点实现类
         /// </summary>
-        public Configuration EventSubscriberEndpoint<T>() where T : class, IEventSubscriberEndpoint
+        public Configuration AsyncEventSubscriberEndpoint<T>() where T : class, IAsyncEventSubscriberEndpoint
         {
-            ObjectContainer.RegisterDefault<IEventSubscriberEndpoint, T>();
+            ObjectContainer.RegisterDefault<IAsyncEventSubscriberEndpoint, T>();
             return this;
         }
         /// <summary>
@@ -419,7 +419,7 @@ namespace CodeSharp.EventSourcing
         /// </summary>
         public Configuration DbConnectionFactory<T>() where T : class, IDbConnectionFactory
         {
-            ObjectContainer.RegisterDefault<IDbConnectionFactory, T>();
+            ObjectContainer.RegisterDefault<IDbConnectionFactory, T>(LifeStyle.Transient);
             return this;
         }
         /// <summary>
@@ -439,22 +439,47 @@ namespace CodeSharp.EventSourcing
             return this;
         }
         /// <summary>
+        /// 注册Context事务管理器生命周期实现类
+        /// </summary>
+        public Configuration ContextTransactionLifetimeManager<T>() where T : class, IContextTransactionLifetimeManager
+        {
+            ObjectContainer.RegisterDefault<IContextTransactionLifetimeManager, T>();
+            return this;
+        }
+        /// <summary>
         /// 注册Context事务管理器实现类
         /// </summary>
         public Configuration ContextTransactionManager<T>() where T : class, IContextTransactionManager
         {
-            ObjectContainer.RegisterDefault<IContextTransactionManager, T>();
+            ObjectContainer.RegisterDefault<IContextTransactionManager, T>(LifeStyle.Transient);
             return this;
         }
         /// <summary>
-        /// 注册数据库事务管理器实现类
+        /// 注册当前可用的数据库事务提供者实现类
         /// </summary>
-        public Configuration DbTransactionManager<T>() where T : class, ICurrentDbTransactionProvider
+        public Configuration CurrentDbTransactionProvider<T>() where T : class, ICurrentDbTransactionProvider
         {
-            ObjectContainer.RegisterDefault<ICurrentDbTransactionProvider, T>();
+            ObjectContainer.RegisterDefault<ICurrentDbTransactionProvider, T>(LifeStyle.Transient);
             return this;
         }
 
+        /// <summary>
+        /// 启用快照，快照启动用，加载聚合根时优先会从可用的快照开始加载。
+        /// </summary>
+        /// <returns></returns>
+        public Configuration EnableSnapshot()
+        {
+            var key = "snapshotEnabled";
+            if (Settings.ContainsKey(key))
+            {
+                Settings[key] = true;
+            }
+            else
+            {
+                Settings.Add(key, true);
+            }
+            return this;
+        }
         /// <summary>
         /// 注册给定程序集中所有的组件
         /// </summary>
@@ -555,11 +580,19 @@ namespace CodeSharp.EventSourcing
             return this;
         }
         /// <summary>
-        /// 启动事件订阅者端点
+        /// 启动异步事件发布者端点
         /// </summary>
-        public Configuration StartEventSubscriberEndpoint(string endpointAddress = null, bool clearSubscriptions = true)
+        public Configuration StartAsyncEventPublisherEndpoint()
         {
-            var endpoint = ObjectContainer.Resolve<IEventSubscriberEndpoint>();
+            ObjectContainer.Resolve<IAsyncEventPublisher>().Start();
+            return this;
+        }
+        /// <summary>
+        /// 启动异步事件订阅者端点
+        /// </summary>
+        public Configuration StartAsyncEventSubscriberEndpoint(string endpointAddress = null, bool clearSubscriptions = true)
+        {
+            var endpoint = ObjectContainer.Resolve<IAsyncEventSubscriberEndpoint>();
             endpoint.Initialize(endpointAddress ?? Configuration.Instance.AppName, clearSubscriptions);
             endpoint.Start();
             return this;
