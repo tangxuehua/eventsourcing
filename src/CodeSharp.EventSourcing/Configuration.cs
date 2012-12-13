@@ -464,7 +464,7 @@ namespace CodeSharp.EventSourcing
         }
 
         /// <summary>
-        /// 启用快照，快照启动用，加载聚合根时优先会从可用的快照开始加载。
+        /// 启用快照，快照启动后，加载聚合根时优先会从可用的快照开始加载。
         /// </summary>
         /// <returns></returns>
         public Configuration EnableSnapshot()
