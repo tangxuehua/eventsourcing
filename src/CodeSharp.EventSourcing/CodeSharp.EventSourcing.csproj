@@ -73,6 +73,7 @@
     <Compile Include="ObjectContainer\ObjectContainer.cs" />
     <Compile Include="Storage\Impl\EmptySnapshotStore.cs" />
     <Compile Include="Storage\Impl\DefaultEventStore.cs" />
+    <Compile Include="Storage\Impl\DefaultSnapshotStore.cs" />
     <Compile Include="Storage\ISourcableEventTableProvider.cs" />
     <Compile Include="Storage\IAggregateRootVersionTableProvider.cs" />
     <Compile Include="Storage\Impl\DefaultAggregateRootVersionTableProvider.cs" />

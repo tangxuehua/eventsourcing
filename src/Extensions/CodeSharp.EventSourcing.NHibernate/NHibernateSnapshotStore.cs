@@ -2,7 +2,6 @@
 
 using System;
 using System.Linq;
-using CodeSharp.EventSourcing;
 using NHibernate;
 using NHibernate.Criterion;
 

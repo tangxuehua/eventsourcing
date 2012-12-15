@@ -194,7 +194,7 @@ namespace CodeSharp.EventSourcing
             ObjectContainer.Register<IEventTypeProvider, DefaultEventTypeProvider>();
             ObjectContainer.Register<ITypeNameMappingProvider, DefaultTypeNameMappingProvider>();
             ObjectContainer.Register<IEventStore, DefaultEventStore>(LifeStyle.Transient);
-            ObjectContainer.Register<ISnapshotStore, EmptySnapshotStore>(LifeStyle.Transient);
+            ObjectContainer.Register<ISnapshotStore, DefaultSnapshotStore>(LifeStyle.Transient);
             ObjectContainer.Register<ISyncEventPublisher, DefaultSyncEventPublisher>();
             ObjectContainer.Register<IAsyncEventPublisher, DefaultAsyncEventPublisher>();
             ObjectContainer.Register<IAsyncEventSubscriberEndpoint, DefaultAsyncEventSubscriberEndpoint>();

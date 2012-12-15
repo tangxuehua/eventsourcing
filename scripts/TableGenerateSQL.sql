@@ -24,6 +24,22 @@ CREATE TABLE [dbo].[EventSourcing_Sample_Version](
 
 GO
 
+CREATE TABLE [dbo].[EventSourcing_Sample_Snapshot](
+    [UniqueId] [nvarchar](64) NOT NULL,
+    [AggregateRootName] [nvarchar](512) NOT NULL,
+    [AggregateRootId] [nvarchar](64) NOT NULL,
+    [Version] [bigint] NOT NULL,
+    [Name] [nvarchar](512) NOT NULL,
+    [SerializedData] [nvarchar](max) NOT NULL,
+    [CreatedTime] [datetime] NOT NULL,
+ CONSTRAINT [PK_EventSourcing_Sample_Snapshot] PRIMARY KEY CLUSTERED
+(
+    [UniqueId] ASC
+)WITH (PAD_INDEX  = OFF, STATISTICS_NORECOMPUTE  = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS  = ON, ALLOW_PAGE_LOCKS  = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
 CREATE TABLE [dbo].[EventSourcing_Sample_Subscription](
     [UniqueId] [nvarchar](64) NOT NULL,
     [SubscriberAddress] [nvarchar](512) NOT NULL,
