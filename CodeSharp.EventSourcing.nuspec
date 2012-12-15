@@ -1,0 +1,26 @@
+﻿<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>CodeSharp.EventSourcing</id>
+    <version>2.0.0.1</version>
+    <title>CodeSharp.EventSourcing</title>
+    <authors>tangxuehua</authors>
+    <owners>tangxuehua</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>An open-source framework which implement the event sourcing pattern and CQRS architecture and is suitable for developing DDD based applications.
+    </description>
+    <projectUrl>https://github.com/tangxuehua/eventsourcing</projectUrl>
+    <licenseUrl>https://github.com/tangxuehua/eventsourcing/blob/master/license.txt</licenseUrl>
+    <iconUrl>https://raw.github.com/tangxuehua/eventsourcing/master/doc/CodeSharpLogo.png</iconUrl>
+    <tags>DDD Event Sourcing CQRS</tags>
+    <copyright>2012</copyright>
+    <language>zh-CN</language>
+    <dependencies>
+        <dependency id="log4net" version="2.0.0" />
+        <dependency id="Newtonsoft.Json" version="4.5.11" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="build\CodeSharp.EventSourcing.dll" target="lib\net40\CodeSharp.EventSourcing.dll" />
+  </files>
+</package>

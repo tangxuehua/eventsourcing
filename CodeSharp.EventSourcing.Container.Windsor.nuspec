@@ -1,0 +1,27 @@
+﻿<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>CodeSharp.EventSourcing.Container.Windsor</id>
+    <version>1.0.0.0</version>
+    <title>CodeSharp.EventSourcing.Container.Windsor</title>
+    <authors>tangxuehua</authors>
+    <owners>tangxuehua</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>CodeSharp.EventSourcing integrated with Castle.Windsor to implement the IoC container.
+    </description>
+    <projectUrl>https://github.com/tangxuehua/eventsourcing</projectUrl>
+    <licenseUrl>https://github.com/tangxuehua/eventsourcing/blob/master/license.txt</licenseUrl>
+    <iconUrl>https://raw.github.com/tangxuehua/eventsourcing/master/doc/CodeSharpLogo.png</iconUrl>
+    <tags>DDD Event Sourcing CQRS Castle Windsor</tags>
+    <copyright>2012</copyright>
+    <language>zh-CN</language>
+    <dependencies>
+    	<dependency id="Castle.Core" version="3.1.0" />
+    	<dependency id="Castle.Windsor" version="3.1.0" />
+    	<dependency id="CodeSharp.EventSourcing" version="2.0.0.1" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="build\CodeSharp.EventSourcing.Container.Windsor.dll" target="lib\net40\CodeSharp.EventSourcing.Container.Windsor.dll" />
+  </files>
+</package>
