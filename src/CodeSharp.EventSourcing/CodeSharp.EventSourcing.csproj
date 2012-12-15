@@ -52,6 +52,8 @@
     <Compile Include="Domain\ISnapshotTypeProvider.cs" />
     <Compile Include="EventPublisher\AsyncEventPublisher\IAsyncEventPublisher.cs" />
     <Compile Include="EventPublisher\SyncEventPublisher\ISyncEventPublisher.cs" />
+    <Compile Include="EventPublisher\SyncEventPublisher\InterfaceSyncEventHandlerProvider.cs" />
+    <Compile Include="EventPublisher\AsyncEventPublisher\Impl\InterfaceAsyncEventHandlerProvider.cs" />
     <Compile Include="ObjectContainer\TinyIoC.cs" />
     <Compile Include="ObjectContainer\TinyIoCObjectContainer.cs" />
     <Compile Include="Storage\Impl\DefaultSubscriptionStore.cs" />

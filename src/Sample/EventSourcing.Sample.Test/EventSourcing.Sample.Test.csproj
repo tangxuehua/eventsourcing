@@ -78,18 +78,6 @@
       <Project>{f884f01a-ed67-4f21-8576-fd2588491b24}</Project>
       <Name>CodeSharp.EventSourcing</Name>
     </ProjectReference>
-    <ProjectReference Include="..\EventSourcing.Sample.Application\EventSourcing.Sample.Application.csproj">
-      <Project>{01ba7824-d469-43a7-bd6d-3fd5db2c537b}</Project>
-      <Name>EventSourcing.Sample.Application</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EventSourcing.Sample.EventSubscribers\EventSourcing.Sample.EventSubscribers.csproj">
-      <Project>{BC2C4E31-AFFD-433A-815E-A92889E81265}</Project>
-      <Name>EventSourcing.Sample.EventSubscribers</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\EventSourcing.Sample.Model\EventSourcing.Sample.Model.csproj">
-      <Project>{b2e0767e-3441-493e-9acf-ca01100e2741}</Project>
-      <Name>EventSourcing.Sample.Model</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

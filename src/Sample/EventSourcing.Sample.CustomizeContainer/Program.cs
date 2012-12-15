@@ -28,7 +28,7 @@ namespace EventSourcing.Sample.CustomizeContainer
             var note = noteService.CreateNote("Sample Note");
             noteService.ChangeTitle(note.Id, "Updated Note Title");
 
-            Console.WriteLine("Press Enter to exit.");
+            Console.Write("Press Enter to exit...");
             Console.ReadLine();
         }
     }
