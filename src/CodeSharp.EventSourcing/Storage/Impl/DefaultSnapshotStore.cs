@@ -52,7 +52,7 @@ namespace CodeSharp.EventSourcing
                         AggregateRootName = GetAggregateRootName(snapshot.AggregateRootType),
                         Version = snapshot.Version,
                         SerializedData = SerializeSnapshotData(snapshot.Data),
-                        CreateTime = snapshot.CreatedTime
+                        CreatedTime = snapshot.CreatedTime
                     }, table);
             }
         }
