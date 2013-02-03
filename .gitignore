@@ -5,7 +5,6 @@ packages
 %APPDATA%
 application_config
 TestResults
-Debug
 bin
 obj
 *.suo
