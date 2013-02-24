@@ -7,7 +7,6 @@ This is an open-source framework which implement the event sourcing pattern and 
 2. 如果要调试代码，需要先新建一个SQL数据库，比如名称叫EventSourcingSampleDB，然后在新建的数据库上执行SQL脚本：scripts\TableGenerateSQL.sql
 3. 有些示例代码需要安装MSMQ，否则会报错。安装MSMQ很简单，到控制面板->所有程序->启动或关闭Windows功能，然后选择MSMQ进行安装即可。
 
-
 ## License
 
 ![GPL](http://www.gnu.org/graphics/gplv3-127x51.png)
