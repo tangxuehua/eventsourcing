@@ -118,7 +118,7 @@ CREATE TABLE [dbo].[EventSourcing_Sample_LibraryAccount](
 GO
 
 CREATE TABLE [dbo].[EventSourcing_Sample_Library](
-	[Id] [uniqueidentifier] NULL,
+	[Id] [uniqueidentifier] NOT NULL,
 	[Name] [nvarchar](512) NOT NULL
  CONSTRAINT [PK_EventSourcing_Sample_Library] PRIMARY KEY CLUSTERED 
 (
